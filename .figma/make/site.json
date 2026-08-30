@@ -1,0 +1,10 @@
+{
+  "description": "Streamline wedding planning with personalized checklists, budget management, and vendor recommendations tailored for engaged couples.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
