@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { ShagunEntry, GiftType } from "../types"
-import { generateId, formatINR, formatINRFull, inp, btnPrimary } from "../utils"
+import { formatINR, formatINRFull, inp, btnPrimary } from "../utils"
+import { shagunApi } from "../api"
 
 interface Props {
   entries: ShagunEntry[]
   onChange: (e: ShagunEntry[]) => void
+  weddingId?: string
 }
 
 const TYPE_STYLE: Record<GiftType, { label: string; bg: string; text: string; emoji: string }> = {
@@ -18,10 +20,11 @@ const blank: Omit<ShagunEntry, "id"> = {
   guestName: "", amount: 0, type: "cash", description: "", date: new Date().toISOString().split("T")[0],
 }
 
-export default function Shagun({ entries, onChange }: Props) {
+export default function Shagun({ entries, onChange, weddingId }: Props) {
   const [form, setForm] = useState<Omit<ShagunEntry, "id">>(blank)
   const [filterType, setFilterType] = useState<GiftType | "all">("all")
   const [sortBy, setSortBy] = useState<"date" | "amount">("date")
+  const [loading, setLoading] = useState(false)
 
   const total = entries.reduce((s, e) => s + e.amount, 0)
   const cashTotal = entries.filter((e) => e.type === "cash").reduce((s, e) => s + e.amount, 0)
@@ -29,13 +32,27 @@ export default function Shagun({ entries, onChange }: Props) {
   const chequeTotal = entries.filter((e) => e.type === "cheque").reduce((s, e) => s + e.amount, 0)
   const giftCount = entries.filter((e) => e.type === "gift").length
 
-  const add = () => {
+  const add = async () => {
     if (!form.guestName.trim()) return
-    onChange([...entries, { ...form, id: generateId() }])
+    setLoading(true)
+    if (weddingId) {
+      const res = await shagunApi.create(weddingId, form)
+      if (res.success && res.data?.entry) {
+        onChange([...entries, res.data.entry])
+      }
+    } else {
+      onChange([...entries, { ...form, id: Math.random().toString(36).substring(2, 9) }])
+    }
     setForm({ ...blank, date: new Date().toISOString().split("T")[0] })
+    setLoading(false)
   }
 
-  const remove = (id: string) => onChange(entries.filter((e) => e.id !== id))
+  const remove = async (id: string) => {
+    if (weddingId) {
+      await shagunApi.delete(weddingId, id)
+    }
+    onChange(entries.filter((e) => e.id !== id))
+  }
 
   const filtered = entries
     .filter((e) => filterType === "all" || e.type === filterType)
@@ -47,7 +64,7 @@ export default function Shagun({ entries, onChange }: Props) {
   return (
     <div className="space-y-6">
       {/* Summary */}
-      <div className="bg-white rounded-2xl border border-[#E8D5B7] overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#E8D5B7] overflow-hidden shadow-sm">
         <div
           style={{ background: "linear-gradient(135deg, #8B1D3B 0%, #5A1228 100%)" }}
           className="px-6 py-5 text-white"
@@ -80,7 +97,7 @@ export default function Shagun({ entries, onChange }: Props) {
         <p className="text-xs text-[#9B8B7A] mb-5">Log Shagun / Gift received</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <div className="col-span-2 sm:col-span-1">
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Guest Name</label>
+            <label className="block text-xs font-medium text-[#6B5744] mb-1">Guest Name *</label>
             <input
               type="text"
               value={form.guestName}
@@ -126,8 +143,8 @@ export default function Shagun({ entries, onChange }: Props) {
             />
           </div>
         </div>
-        <button onClick={add} disabled={!form.guestName.trim()} className={btnPrimary + " mt-4"}>
-          + Log Gift
+        <button onClick={add} disabled={!form.guestName.trim() || loading} className={btnPrimary + " mt-4"}>
+          {loading ? "Logging..." : "+ Log Gift"}
         </button>
       </div>
 
@@ -155,7 +172,7 @@ export default function Shagun({ entries, onChange }: Props) {
       {filtered.length > 0 ? (
         <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] divide-y divide-[#F0E6D3] overflow-hidden">
           {filtered.map((entry) => {
-            const ts = TYPE_STYLE[entry.type]
+            const ts = TYPE_STYLE[entry.type] || TYPE_STYLE.cash
             return (
               <div key={entry.id} className="flex items-center gap-3 px-5 py-4 hover:bg-[#FFFBF5] transition-colors">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-lg" style={{ background: ts.bg }}>

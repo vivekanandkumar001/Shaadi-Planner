@@ -1,28 +1,62 @@
 import { useState } from "react"
 import { Guest, TableData } from "../types"
-import { generateId, inp, btnPrimary } from "../utils"
+import { inp, btnPrimary } from "../utils"
+import { seatingApi } from "../api"
 
 interface Props {
   tables: TableData[]
   guests: Guest[]
   onTablesChange: (t: TableData[]) => void
   onGuestsChange: (g: Guest[]) => void
+  weddingId?: string
 }
 
-export default function Seating({ tables, guests, onTablesChange, onGuestsChange }: Props) {
+export default function Seating({ tables, guests, onTablesChange, onGuestsChange, weddingId }: Props) {
   const [name, setName] = useState("")
   const [cap, setCap] = useState("10")
+  const [loading, setLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
 
-  const addTable = () => {
+  const addTable = async () => {
     if (!name.trim()) return
-    onTablesChange([...tables, { id: generateId(), name, capacity: parseInt(cap) || 10 }])
+    setErrorMsg("")
+    setLoading(true)
+
+    if (weddingId) {
+      const res = await seatingApi.createTable(weddingId, { name, capacity: parseInt(cap) || 8 })
+      if (res.success && res.data?.table) {
+        onTablesChange([...tables, res.data.table])
+      } else {
+        setErrorMsg(res.error?.message || "Failed to create table.")
+      }
+    } else {
+      onTablesChange([...tables, { id: Math.random().toString(36).substring(2, 9), name, capacity: parseInt(cap) || 8 }])
+    }
     setName("")
     setCap("10")
+    setLoading(false)
   }
 
-  const removeTable = (id: string) => {
+  const removeTable = async (id: string) => {
+    if (weddingId) {
+      await seatingApi.deleteTable(weddingId, id)
+    }
     onTablesChange(tables.filter((t) => t.id !== id))
     onGuestsChange(guests.map((g) => (g.tableId === id ? { ...g, tableId: null } : g)))
+  }
+
+  const handleAssign = async (guestId: string, tableId: string) => {
+    setErrorMsg("")
+    if (weddingId) {
+      const res = await seatingApi.assignGuest(weddingId, guestId, tableId)
+      if (res.success) {
+        onGuestsChange(guests.map((g) => (g.id === guestId ? { ...g, tableId } : g)))
+      } else {
+        setErrorMsg(res.error?.message || "Could not assign guest.")
+      }
+    } else {
+      onGuestsChange(guests.map((g) => (g.id === guestId ? { ...g, tableId } : g)))
+    }
   }
 
   const unassigned = guests.filter((g) => !g.tableId)
@@ -39,11 +73,18 @@ export default function Seating({ tables, guests, onTablesChange, onGuestsChange
             { label: "Seated", value: totalSeated, color: "#166534" },
             { label: "Total Capacity", value: totalCapacity, color: "#D4900A" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4 text-center">
+            <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4 text-center shadow-sm">
               <div className="font-playfair text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
               <div className="text-xs text-[#9B8B7A] mt-1">{s.label}</div>
             </div>
           ))}
+        </div>
+      )}
+
+      {errorMsg && (
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs p-3 rounded-lg flex items-center gap-2">
+          <span>⚠️</span>
+          <span>{errorMsg}</span>
         </div>
       )}
 
@@ -53,7 +94,7 @@ export default function Seating({ tables, guests, onTablesChange, onGuestsChange
         <p className="text-xs text-[#9B8B7A] mb-5">Seating Planner — create tables and assign guests</p>
         <div className="flex gap-3 flex-wrap items-end">
           <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Table Name</label>
+            <label className="block text-xs font-medium text-[#6B5744] mb-1">Table Name *</label>
             <input
               type="text"
               value={name}
@@ -74,23 +115,33 @@ export default function Seating({ tables, guests, onTablesChange, onGuestsChange
               className="border border-[#E8D5B7] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B1D3B]/25 focus:border-[#8B1D3B] bg-[#FFFBF5] w-24 transition-colors"
             />
           </div>
-          <button onClick={addTable} disabled={!name.trim()} className={btnPrimary}>
-            + Add Table
+          <button onClick={addTable} disabled={!name.trim() || loading} className={btnPrimary}>
+            {loading ? "Adding..." : "+ Add Table"}
           </button>
         </div>
       </div>
 
       {/* Unassigned banner */}
       {unassigned.length > 0 && tables.length > 0 && (
-        <div className="bg-[#FEF0D7] rounded-xl border border-[#E8D5B7] px-5 py-4">
+        <div className="bg-[#FEF0D7] rounded-xl border border-[#E8D5B7] px-5 py-4 shadow-sm">
           <p className="text-xs font-medium text-[#6B5744] mb-2">
-            {unassigned.length} guest{unassigned.length > 1 ? "s" : ""} unassigned — assign tables from the Guests page
+            {unassigned.length} guest{unassigned.length > 1 ? "s" : ""} unassigned — assign tables directly below:
           </p>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {unassigned.map((g) => (
-              <span key={g.id} className="bg-white border border-[#E8D5B7] text-[#6B5744] text-xs px-2.5 py-0.5 rounded-full">
-                {g.name}
-              </span>
+              <div key={g.id} className="bg-white border border-[#E8D5B7] text-[#6B5744] text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-2xs">
+                <span>{g.name}</span>
+                <select
+                  value=""
+                  onChange={(e) => e.target.value && handleAssign(g.id, e.target.value)}
+                  className="text-[10px] border border-amber-300 rounded bg-[#FFFBF5] px-1 py-0.5"
+                >
+                  <option value="">Assign Table</option>
+                  {tables.map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
             ))}
           </div>
         </div>
@@ -107,7 +158,7 @@ export default function Seating({ tables, guests, onTablesChange, onGuestsChange
             return (
               <div
                 key={table.id}
-                className={`bg-white rounded-2xl border-2 p-5 transition-colors ${full ? "border-[#D4900A]" : "border-[#E8D5B7] hover:border-[#8B1D3B]/30"}`}
+                className={`bg-white rounded-2xl border-2 p-5 transition-colors shadow-sm ${full ? "border-[#D4900A]" : "border-[#E8D5B7] hover:border-[#8B1D3B]/30"}`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -145,7 +196,7 @@ export default function Seating({ tables, guests, onTablesChange, onGuestsChange
       ) : (
         <div className="text-center py-20 text-[#C4A882]">
           <div className="text-6xl mb-4">🪑</div>
-          <p className="text-sm font-medium">No tables yet.</p>
+          <p className="text-sm font-medium">No tables added yet.</p>
           <p className="text-xs mt-1">Add tables to arrange your baraat seating!</p>
         </div>
       )}

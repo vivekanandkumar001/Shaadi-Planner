@@ -1,0 +1,247 @@
+// Prisma schema for Shaadi Planner Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String                   @id @default(uuid())
+  email                   String                   @unique
+  name                    String
+  phone                   String?
+  passwordHash            String
+  isVerified              Boolean                  @default(true)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  sessions                Session[]
+  weddings                Wedding[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  activityLogs            ActivityLog[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Wedding {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String
+  brideName       String
+  groomName       String
+  weddingDate     String
+  location        String?
+  city            String?
+  cityTier        String            @default("metro")
+  venue           String?
+  estimatedGuests Int               @default(300)
+  estimatedBudget Decimal           @default(2500000) @db.Decimal(12, 2)
+  eventDays       Int               @default(3)
+  currency        String            @default("INR")
+  theme           String?
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  guests          Guest[]
+  tables          TableData[]
+  vendors         Vendor[]
+  functions       WeddingFunction[]
+  checklistItems  ChecklistItem[]
+  shagunEntries   ShagunEntry[]
+  menuCourses     MenuCourse[]
+  notesItems      Note[]
+  shareLinks      ShareLink[]
+  activityLogs    ActivityLog[]
+
+  @@index([userId])
+}
+
+model Guest {
+  id        String     @id @default(uuid())
+  weddingId String
+  wedding   Wedding    @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name      String
+  side      String     @default("common")
+  rsvp      String     @default("pending")
+  meal      String     @default("veg")
+  plusOnes  Int        @default(0)
+  phone     String?
+  email     String?
+  notes     String?
+  tableId   String?
+  table     TableData? @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([weddingId])
+  @@index([tableId])
+}
+
+model TableData {
+  id        String   @id @default(uuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name      String
+  capacity  Int      @default(8)
+  guests    Guest[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([weddingId])
+}
+
+model Vendor {
+  id           String   @id @default(uuid())
+  weddingId    String
+  wedding      Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name         String
+  category     String   @default("other")
+  contact      String?
+  email        String?
+  quotedAmount Decimal  @default(0) @db.Decimal(12, 2)
+  paidAmount   Decimal  @default(0) @db.Decimal(12, 2)
+  status       String   @default("enquired")
+  notes        String?
+  relatedEvent String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([weddingId])
+}
+
+model WeddingFunction {
+  id        String   @id @default(uuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name      String
+  hindiName String?
+  date      String?
+  time      String?
+  venue     String?
+  dresscode String?
+  notes     String?
+  color     String   @default("#8B1D3B")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([weddingId])
+}
+
+model ChecklistItem {
+  id        String   @id @default(uuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  task      String
+  category  String   @default("other")
+  priority  String   @default("medium")
+  dueDate   String?
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([weddingId])
+}
+
+model ShagunEntry {
+  id          String   @id @default(uuid())
+  weddingId   String
+  wedding     Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  guestName   String
+  amount      Decimal  @default(0) @db.Decimal(12, 2)
+  type        String   @default("cash")
+  description String?
+  date        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([weddingId])
+}
+
+model MenuCourse {
+  id        String     @id @default(uuid())
+  weddingId String
+  wedding   Wedding    @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name      String
+  hindiName String?
+  mealType  String     @default("veg")
+  items     MenuItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([weddingId])
+}
+
+model MenuItem {
+  id       String     @id @default(uuid())
+  courseId String
+  course   MenuCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  name     String
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  color     String   @default("#8B1D3B")
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([weddingId])
+}
+
+model ShareLink {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  weddingId String
+  wedding   Wedding   @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([weddingId])
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([weddingId])
+}

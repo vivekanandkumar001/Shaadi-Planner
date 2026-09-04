@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { MenuCourse } from "../types"
-import { generateId, inp } from "../utils"
+import { inp } from "../utils"
+import { menuApi } from "../api"
 
 interface Props {
   courses: MenuCourse[]
   onChange: (c: MenuCourse[]) => void
+  weddingId?: string
 }
 
 const MEAL_STYLE = {
@@ -13,35 +15,86 @@ const MEAL_STYLE = {
   both: { bg: "#FEF0D7", text: "#92400E", dot: "#D4900A", label: "Veg + Non-Veg" },
 }
 
-export default function Menu({ courses, onChange }: Props) {
+export default function Menu({ courses, onChange, weddingId }: Props) {
   const [newItem, setNewItem] = useState<Record<string, string>>({})
   const [showAddCourse, setShowAddCourse] = useState(false)
   const [newCourseName, setNewCourseName] = useState("")
   const [newCourseHindi, setNewCourseHindi] = useState("")
   const [newCourseMeal, setNewCourseMeal] = useState<"veg" | "nonveg" | "both">("veg")
+  const [loading, setLoading] = useState(false)
 
-  const addCourse = () => {
+  const addCourse = async () => {
     if (!newCourseName.trim()) return
-    onChange([...courses, {
-      id: generateId(), name: newCourseName, hindiName: newCourseHindi, items: [], mealType: newCourseMeal,
-    }])
-    setNewCourseName(""); setNewCourseHindi(""); setShowAddCourse(false)
+    setLoading(true)
+    const payload = {
+      name: newCourseName,
+      hindiName: newCourseHindi,
+      mealType: newCourseMeal,
+      items: [],
+    }
+
+    if (weddingId) {
+      const res = await menuApi.createCourse(weddingId, payload)
+      if (res.success && res.data?.course) {
+        onChange([...courses, res.data.course])
+      }
+    } else {
+      onChange([...courses, { ...payload, id: Math.random().toString(36).substring(2, 9) }])
+    }
+    setNewCourseName("")
+    setNewCourseHindi("")
+    setShowAddCourse(false)
+    setLoading(false)
   }
 
-  const removeCourse = (id: string) => onChange(courses.filter((c) => c.id !== id))
+  const removeCourse = async (id: string) => {
+    if (weddingId) {
+      await menuApi.deleteCourse(weddingId, id)
+    }
+    onChange(courses.filter((c) => c.id !== id))
+  }
 
-  const addItemToCourse = (courseId: string) => {
+  const addItemToCourse = async (courseId: string) => {
     const val = (newItem[courseId] || "").trim()
     if (!val) return
-    onChange(courses.map((c) => c.id === courseId ? { ...c, items: [...c.items, val] } : c))
+
+    const course = courses.find((c) => c.id === courseId)
+    if (!course) return
+
+    const updatedItems = [...course.items, val]
+    const updatedCourses = courses.map((c) => (c.id === courseId ? { ...c, items: updatedItems } : c))
+    onChange(updatedCourses)
     setNewItem((p) => ({ ...p, [courseId]: "" }))
+
+    if (weddingId) {
+      await menuApi.updateCourse(weddingId, courseId, { ...course, items: updatedItems })
+    }
   }
 
-  const removeItemFromCourse = (courseId: string, item: string) =>
-    onChange(courses.map((c) => c.id === courseId ? { ...c, items: c.items.filter((i) => i !== item) } : c))
+  const removeItemFromCourse = async (courseId: string, item: string) => {
+    const course = courses.find((c) => c.id === courseId)
+    if (!course) return
 
-  const updateCourse = (id: string, patch: Partial<MenuCourse>) =>
-    onChange(courses.map((c) => (c.id === id ? { ...c, ...patch } : c)))
+    const updatedItems = course.items.filter((i) => i !== item)
+    const updatedCourses = courses.map((c) => (c.id === courseId ? { ...c, items: updatedItems } : c))
+    onChange(updatedCourses)
+
+    if (weddingId) {
+      await menuApi.updateCourse(weddingId, courseId, { ...course, items: updatedItems })
+    }
+  }
+
+  const updateCourseMeal = async (id: string, mealType: MenuCourse["mealType"]) => {
+    const course = courses.find((c) => c.id === id)
+    if (!course) return
+
+    const updatedCourses = courses.map((c) => (c.id === id ? { ...c, mealType } : c))
+    onChange(updatedCourses)
+
+    if (weddingId) {
+      await menuApi.updateCourse(weddingId, id, { ...course, mealType })
+    }
+  }
 
   const totalItems = courses.reduce((s, c) => s + c.items.length, 0)
   const vegItems = courses.filter((c) => c.mealType !== "nonveg").reduce((s, c) => s + c.items.length, 0)
@@ -55,7 +108,7 @@ export default function Menu({ courses, onChange }: Props) {
           { label: "Total Items", value: totalItems, color: "#D4900A" },
           { label: "Veg / Mixed", value: vegItems, color: "#166534" },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4 text-center">
+          <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4 text-center shadow-sm">
             <div className="font-playfair text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs text-[#9B8B7A] mt-1">{s.label}</div>
           </div>
@@ -70,7 +123,7 @@ export default function Menu({ courses, onChange }: Props) {
         </div>
         <button
           onClick={() => setShowAddCourse((p) => !p)}
-          className="bg-[#8B1D3B] hover:bg-[#6B1530] text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
+          className="bg-[#8B1D3B] hover:bg-[#6B1530] text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors shadow-sm"
         >
           + Add Course
         </button>
@@ -81,7 +134,7 @@ export default function Menu({ courses, onChange }: Props) {
           <h3 className="font-playfair font-bold text-[#8B1D3B] mb-4">New Course</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Course Name</label>
+              <label className="block text-xs font-medium text-[#6B5744] mb-1">Course Name *</label>
               <input type="text" value={newCourseName} onChange={(e) => setNewCourseName(e.target.value)} placeholder="e.g. Starters" className={inp} />
             </div>
             <div>
@@ -98,7 +151,9 @@ export default function Menu({ courses, onChange }: Props) {
             </div>
           </div>
           <div className="mt-4 flex gap-2">
-            <button onClick={addCourse} disabled={!newCourseName.trim()} className="bg-[#8B1D3B] hover:bg-[#6B1530] disabled:opacity-40 text-white font-medium px-5 py-2 rounded-lg text-sm transition-colors">Add</button>
+            <button onClick={addCourse} disabled={!newCourseName.trim() || loading} className="bg-[#8B1D3B] hover:bg-[#6B1530] disabled:opacity-40 text-white font-medium px-5 py-2 rounded-lg text-sm transition-colors">
+              {loading ? "Adding..." : "Add"}
+            </button>
             <button onClick={() => setShowAddCourse(false)} className="bg-[#F0E6D3] hover:bg-[#E8D5B7] text-[#6B5744] font-medium px-5 py-2 rounded-lg text-sm transition-colors">Cancel</button>
           </div>
         </div>
@@ -107,9 +162,9 @@ export default function Menu({ courses, onChange }: Props) {
       {/* Course cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {courses.map((course) => {
-          const ms = MEAL_STYLE[course.mealType]
+          const ms = MEAL_STYLE[course.mealType] || MEAL_STYLE.veg
           return (
-            <div key={course.id} className="bg-white rounded-2xl border border-[#E8D5B7] overflow-hidden hover:border-[#D4900A]/40 transition-colors">
+            <div key={course.id} className="bg-white rounded-2xl border border-[#E8D5B7] overflow-hidden hover:border-[#D4900A]/40 transition-colors shadow-sm">
               <div className="flex items-center justify-between px-5 py-4 border-b border-[#F0E6D3]">
                 <div>
                   <div className="font-playfair font-bold text-[#2C1810]">{course.name}</div>
@@ -122,7 +177,7 @@ export default function Menu({ courses, onChange }: Props) {
                   </span>
                   <select
                     value={course.mealType}
-                    onChange={(e) => updateCourse(course.id, { mealType: e.target.value as MenuCourse["mealType"] })}
+                    onChange={(e) => updateCourseMeal(course.id, e.target.value as MenuCourse["mealType"])}
                     className="border border-[#E8D5B7] rounded px-1 py-0.5 text-xs bg-[#FFFBF5] text-[#6B5744] focus:outline-none"
                   >
                     <option value="veg">Veg</option>
@@ -179,7 +234,7 @@ export default function Menu({ courses, onChange }: Props) {
       {courses.length === 0 && (
         <div className="text-center py-20 text-[#C4A882]">
           <div className="text-6xl mb-4">🍽️</div>
-          <p className="text-sm font-medium">No menu courses yet.</p>
+          <p className="text-sm font-medium">No menu courses added yet.</p>
           <p className="text-xs mt-1">Start building your wedding feast!</p>
         </div>
       )}

@@ -1,11 +1,13 @@
 import { useState } from "react"
 import { Guest, Side, RSVP, MealPref, TableData } from "../types"
-import { generateId, inp, btnPrimary } from "../utils"
+import { inp, btnPrimary } from "../utils"
+import { guestsApi } from "../api"
 
 interface Props {
   guests: Guest[]
   tables: TableData[]
   onChange: (g: Guest[]) => void
+  weddingId?: string
 }
 
 type Filter = "all" | Side
@@ -14,10 +16,11 @@ const blank: Omit<Guest, "id"> = {
   name: "", side: "common", rsvp: "pending", meal: "veg", plusOnes: 0, tableId: null, phone: "",
 }
 
-export default function Guests({ guests, tables, onChange }: Props) {
+export default function Guests({ guests, tables, onChange, weddingId }: Props) {
   const [form, setForm] = useState<Omit<Guest, "id">>(blank)
   const [filter, setFilter] = useState<Filter>("all")
   const [sortBy, setSortBy] = useState<"name" | "rsvp" | "side">("name")
+  const [loading, setLoading] = useState(false)
 
   const confirmed = guests.filter((g) => g.rsvp === "confirmed").length
   const headcount = guests.reduce((s, g) => s + 1 + g.plusOnes, 0)
@@ -25,19 +28,49 @@ export default function Guests({ guests, tables, onChange }: Props) {
   const nonVegCount = guests.filter((g) => g.meal === "nonveg").length
   const jainCount = guests.filter((g) => g.meal === "jain").length
 
-  const add = () => {
+  const add = async () => {
     if (!form.name.trim()) return
-    onChange([...guests, { ...form, id: generateId() }])
+    setLoading(true)
+    if (weddingId) {
+      const res = await guestsApi.create(weddingId, form)
+      if (res.success && res.data?.guest) {
+        onChange([...guests, res.data.guest])
+      }
+    } else {
+      onChange([...guests, { ...form, id: Math.random().toString(36).substring(2, 9) }])
+    }
     setForm(blank)
+    setLoading(false)
   }
 
-  const remove = (id: string) => onChange(guests.filter((g) => g.id !== id))
+  const remove = async (id: string) => {
+    if (weddingId) {
+      await guestsApi.delete(weddingId, id)
+    }
+    onChange(guests.filter((g) => g.id !== id))
+  }
 
-  const updateRsvp = (id: string, rsvp: RSVP) =>
-    onChange(guests.map((g) => (g.id === id ? { ...g, rsvp } : g)))
+  const updateRsvp = async (id: string, rsvp: RSVP) => {
+    const updated = guests.map((g) => (g.id === id ? { ...g, rsvp } : g))
+    onChange(updated)
+    if (weddingId) {
+      const target = guests.find((g) => g.id === id)
+      if (target) {
+        await guestsApi.update(weddingId, id, { ...target, rsvp })
+      }
+    }
+  }
 
-  const updateTable = (id: string, tableId: string | null) =>
-    onChange(guests.map((g) => (g.id === id ? { ...g, tableId } : g)))
+  const updateTable = async (id: string, tableId: string | null) => {
+    const updated = guests.map((g) => (g.id === id ? { ...g, tableId } : g))
+    onChange(updated)
+    if (weddingId) {
+      const target = guests.find((g) => g.id === id)
+      if (target) {
+        await guestsApi.update(weddingId, id, { ...target, tableId })
+      }
+    }
+  }
 
   const filtered = guests
     .filter((g) => filter === "all" || g.side === filter)
@@ -60,7 +93,7 @@ export default function Guests({ guests, tables, onChange }: Props) {
           { label: "Headcount", sub: "incl. plus-ones", value: headcount, color: "#D4900A" },
           { label: "Unassigned", sub: "no table yet", value: guests.filter((g) => !g.tableId).length, color: "#9B8B7A" },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4">
+          <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4 shadow-sm">
             <div className="font-playfair text-3xl font-bold" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs font-semibold text-[#2C1810] mt-1">{s.label}</div>
             <div className="text-[10px] text-[#9B8B7A]">{s.sub}</div>
@@ -70,7 +103,7 @@ export default function Guests({ guests, tables, onChange }: Props) {
 
       {/* Meal summary */}
       {guests.length > 0 && (
-        <div className="bg-white rounded-2xl border border-[#E8D5B7] px-5 py-4 flex flex-wrap gap-6">
+        <div className="bg-white rounded-2xl border border-[#E8D5B7] px-5 py-4 flex flex-wrap gap-6 shadow-sm">
           <div className="text-xs font-medium text-[#6B5744] self-center">Meal Preferences:</div>
           {[
             { label: "Veg", count: vegCount, dot: "#16A34A" },
@@ -92,7 +125,7 @@ export default function Guests({ guests, tables, onChange }: Props) {
         <p className="text-xs text-[#9B8B7A] mb-5">Add Guest</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <div className="col-span-2">
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Name (नाम)</label>
+            <label className="block text-xs font-medium text-[#6B5744] mb-1">Name (नाम) *</label>
             <input
               type="text"
               value={form.name}
@@ -140,8 +173,8 @@ export default function Guests({ guests, tables, onChange }: Props) {
             />
           </div>
         </div>
-        <button onClick={add} disabled={!form.name.trim()} className={btnPrimary + " mt-4"}>
-          + Add Guest
+        <button onClick={add} disabled={!form.name.trim() || loading} className={btnPrimary + " mt-4"}>
+          {loading ? "Adding..." : "+ Add Guest"}
         </button>
       </div>
 
@@ -225,7 +258,7 @@ export default function Guests({ guests, tables, onChange }: Props) {
                         ))}
                       </select>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 text-right">
                       <button onClick={() => remove(g.id)} className="text-[#C4A882] hover:text-red-500 transition-colors text-xl leading-none">×</button>
                     </td>
                   </tr>
@@ -237,7 +270,7 @@ export default function Guests({ guests, tables, onChange }: Props) {
       ) : (
         <div className="text-center py-20 text-[#C4A882]">
           <div className="text-6xl mb-4">👥</div>
-          <p className="text-sm font-medium">No guests yet. Start adding your baraat!</p>
+          <p className="text-sm font-medium">No guests added yet. Add your guest list above.</p>
         </div>
       )}
     </div>

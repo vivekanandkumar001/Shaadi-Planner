@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { WeddingFunction } from "../types"
 import { inp } from "../utils"
+import { eventsApi } from "../api"
 
 interface Props {
   functions: WeddingFunction[]
   onChange: (f: WeddingFunction[]) => void
+  weddingId?: string
 }
 
 const COLORS = ["#8B1D3B", "#D4900A", "#CA8A04", "#16A34A", "#7C3AED", "#0891B2", "#DC2626", "#EA580C"]
@@ -15,25 +17,47 @@ function daysUntil(dateStr: string): number | null {
   return Math.ceil(diff / 86400000)
 }
 
-export default function Functions({ functions, onChange }: Props) {
+export default function Functions({ functions, onChange, weddingId }: Props) {
   const [editId, setEditId] = useState<string | null>(null)
   const [showAdd, setShowAdd] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [form, setForm] = useState<Omit<WeddingFunction, "id">>({
     name: "", hindiName: "", date: "", time: "", venue: "", dresscode: "", notes: "", color: "#8B1D3B",
   })
 
-  const update = (id: string, patch: Partial<WeddingFunction>) =>
-    onChange(functions.map((f) => (f.id === id ? { ...f, ...patch } : f)))
-
-  const addNew = () => {
-    if (!form.name.trim()) return
-    const id = Math.random().toString(36).substring(2, 10)
-    onChange([...functions, { ...form, id }])
-    setForm({ name: "", hindiName: "", date: "", time: "", venue: "", dresscode: "", notes: "", color: "#8B1D3B" })
-    setShowAdd(false)
+  const update = async (id: string, patch: Partial<WeddingFunction>) => {
+    const target = functions.find((f) => f.id === id)
+    if (!target) return
+    const updated = { ...target, ...patch }
+    onChange(functions.map((f) => (f.id === id ? updated : f)))
+    if (weddingId) {
+      await eventsApi.update(weddingId, id, updated)
+    }
   }
 
-  const remove = (id: string) => onChange(functions.filter((f) => f.id !== id))
+  const addNew = async () => {
+    if (!form.name.trim()) return
+    setLoading(true)
+    if (weddingId) {
+      const res = await eventsApi.create(weddingId, form)
+      if (res.success && res.data?.function) {
+        onChange([...functions, res.data.function])
+      }
+    } else {
+      const id = Math.random().toString(36).substring(2, 10)
+      onChange([...functions, { ...form, id }])
+    }
+    setForm({ name: "", hindiName: "", date: "", time: "", venue: "", dresscode: "", notes: "", color: "#8B1D3B" })
+    setShowAdd(false)
+    setLoading(false)
+  }
+
+  const remove = async (id: string) => {
+    if (weddingId) {
+      await eventsApi.delete(weddingId, id)
+    }
+    onChange(functions.filter((f) => f.id !== id))
+  }
 
   const sorted = [...functions].sort((a, b) => {
     if (!a.date && !b.date) return 0
@@ -51,7 +75,7 @@ export default function Functions({ functions, onChange }: Props) {
         </div>
         <button
           onClick={() => setShowAdd((p) => !p)}
-          className="bg-[#8B1D3B] hover:bg-[#6B1530] text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
+          className="bg-[#8B1D3B] hover:bg-[#6B1530] text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors shadow-sm"
         >
           + Add Function
         </button>
@@ -63,7 +87,7 @@ export default function Functions({ functions, onChange }: Props) {
           <h3 className="font-playfair font-bold text-[#8B1D3B] mb-4">New Function</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Name</label>
+              <label className="block text-xs font-medium text-[#6B5744] mb-1">Name *</label>
               <input type="text" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="e.g. Tilak" className={inp} />
             </div>
             <div>
@@ -105,7 +129,9 @@ export default function Functions({ functions, onChange }: Props) {
             </div>
           </div>
           <div className="mt-4 flex gap-2">
-            <button onClick={addNew} disabled={!form.name.trim()} className="bg-[#8B1D3B] hover:bg-[#6B1530] disabled:opacity-40 text-white font-medium px-5 py-2 rounded-lg text-sm transition-colors">Add</button>
+            <button onClick={addNew} disabled={!form.name.trim() || loading} className="bg-[#8B1D3B] hover:bg-[#6B1530] disabled:opacity-40 text-white font-medium px-5 py-2 rounded-lg text-sm transition-colors">
+              {loading ? "Adding..." : "Add"}
+            </button>
             <button onClick={() => setShowAdd(false)} className="bg-[#F0E6D3] hover:bg-[#E8D5B7] text-[#6B5744] font-medium px-5 py-2 rounded-lg text-sm transition-colors">Cancel</button>
           </div>
         </div>
@@ -117,7 +143,7 @@ export default function Functions({ functions, onChange }: Props) {
           const days = daysUntil(fn.date)
           const isEditing = editId === fn.id
           return (
-            <div key={fn.id} className="bg-white rounded-2xl border border-[#E8D5B7] overflow-hidden hover:border-[#D4900A]/50 transition-colors">
+            <div key={fn.id} className="bg-white rounded-2xl border border-[#E8D5B7] overflow-hidden hover:border-[#D4900A]/50 transition-colors shadow-sm">
               <div className="flex items-stretch">
                 {/* Color bar */}
                 <div className="w-1.5 flex-shrink-0" style={{ background: fn.color }} />
@@ -145,7 +171,7 @@ export default function Functions({ functions, onChange }: Props) {
                       )}
                       <button
                         onClick={() => setEditId(isEditing ? null : fn.id)}
-                        className="text-xs text-[#9B8B7A] hover:text-[#8B1D3B] px-2 py-1 rounded transition-colors"
+                        className="text-xs text-[#9B8B7A] hover:text-[#8B1D3B] px-2 py-1 rounded transition-colors font-medium"
                       >
                         {isEditing ? "Done" : "Edit"}
                       </button>

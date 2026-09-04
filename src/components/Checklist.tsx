@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { ChecklistItem, ChecklistCategory, ChecklistPriority } from "../types"
-import { generateId, inp, btnPrimary } from "../utils"
+import { inp, btnPrimary } from "../utils"
+import { tasksApi } from "../api"
 
 interface Props {
   items: ChecklistItem[]
   onChange: (items: ChecklistItem[]) => void
+  weddingId?: string
 }
 
 const CAT_LABELS: Record<ChecklistCategory, string> = {
@@ -23,24 +25,44 @@ const blank: Omit<ChecklistItem, "id"> = {
   task: "", category: "other", priority: "medium", dueDate: "", done: false,
 }
 
-export default function Checklist({ items, onChange }: Props) {
+export default function Checklist({ items, onChange, weddingId }: Props) {
   const [form, setForm] = useState<Omit<ChecklistItem, "id">>(blank)
   const [catFilter, setCatFilter] = useState<ChecklistCategory | "all">("all")
   const [showDone, setShowDone] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const done = items.filter((i) => i.done).length
   const pct = items.length ? Math.round((done / items.length) * 100) : 0
 
-  const add = () => {
+  const add = async () => {
     if (!form.task.trim()) return
-    onChange([...items, { ...form, id: generateId() }])
+    setLoading(true)
+    if (weddingId) {
+      const res = await tasksApi.create(weddingId, form)
+      if (res.success && res.data?.task) {
+        onChange([...items, res.data.task])
+      }
+    } else {
+      onChange([...items, { ...form, id: Math.random().toString(36).substring(2, 9) }])
+    }
     setForm(blank)
+    setLoading(false)
   }
 
-  const toggle = (id: string) =>
-    onChange(items.map((i) => (i.id === id ? { ...i, done: !i.done } : i)))
+  const toggle = async (id: string) => {
+    const updated = items.map((i) => (i.id === id ? { ...i, done: !i.done } : i))
+    onChange(updated)
+    if (weddingId) {
+      await tasksApi.toggle(weddingId, id)
+    }
+  }
 
-  const remove = (id: string) => onChange(items.filter((i) => i.id !== id))
+  const remove = async (id: string) => {
+    if (weddingId) {
+      await tasksApi.delete(weddingId, id)
+    }
+    onChange(items.filter((i) => i.id !== id))
+  }
 
   const usedCats = Array.from(new Set(items.map((i) => i.category)))
 
@@ -56,7 +78,7 @@ export default function Checklist({ items, onChange }: Props) {
   return (
     <div className="space-y-6">
       {/* Progress */}
-      <div className="bg-white rounded-2xl border border-[#E8D5B7] p-5">
+      <div className="bg-white rounded-2xl border border-[#E8D5B7] p-5 shadow-sm">
         <div className="flex items-center justify-between mb-2">
           <div>
             <span className="font-playfair text-2xl font-bold text-[#8B1D3B]">{done}</span>
@@ -92,7 +114,7 @@ export default function Checklist({ items, onChange }: Props) {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="col-span-2">
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Task</label>
+            <label className="block text-xs font-medium text-[#6B5744] mb-1">Task *</label>
             <input
               type="text"
               value={form.task}
@@ -121,7 +143,9 @@ export default function Checklist({ items, onChange }: Props) {
             <input type="date" value={form.dueDate} onChange={(e) => setForm((p) => ({ ...p, dueDate: e.target.value }))} className={inp} />
           </div>
         </div>
-        <button onClick={add} disabled={!form.task.trim()} className={btnPrimary + " mt-4"}>+ Add Task</button>
+        <button onClick={add} disabled={!form.task.trim() || loading} className={btnPrimary + " mt-4"}>
+          {loading ? "Adding..." : "+ Add Task"}
+        </button>
       </div>
 
       {/* Filters */}
@@ -144,7 +168,7 @@ export default function Checklist({ items, onChange }: Props) {
       {filtered.length > 0 ? (
         <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] divide-y divide-[#F0E6D3] overflow-hidden">
           {filtered.map((item) => {
-            const ps = PRIORITY_STYLE[item.priority]
+            const ps = PRIORITY_STYLE[item.priority] || PRIORITY_STYLE.medium
             return (
               <div
                 key={item.id}
@@ -184,7 +208,7 @@ export default function Checklist({ items, onChange }: Props) {
       ) : (
         <div className="text-center py-20 text-[#C4A882]">
           <div className="text-6xl mb-4">✅</div>
-          <p className="text-sm font-medium">No tasks yet.</p>
+          <p className="text-sm font-medium">No tasks added yet.</p>
           <p className="text-xs mt-1">Add your wedding to-do items above.</p>
         </div>
       )}

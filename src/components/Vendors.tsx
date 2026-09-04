@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { Vendor, VendorCategory, VendorStatus } from "../types"
-import { generateId, formatINR, inp, btnPrimary } from "../utils"
+import { formatINR, inp, btnPrimary } from "../utils"
+import { vendorsApi } from "../api"
 
 interface Props {
   vendors: Vendor[]
   onChange: (v: Vendor[]) => void
+  weddingId?: string
 }
 
 const CATEGORIES: Record<VendorCategory, string> = {
@@ -26,26 +28,43 @@ const blank: Omit<Vendor, "id"> = {
   name: "", category: "venue", contact: "", quotedAmount: 0, paidAmount: 0, status: "enquired", notes: "",
 }
 
-export default function Vendors({ vendors, onChange }: Props) {
+export default function Vendors({ vendors, onChange, weddingId }: Props) {
   const [form, setForm] = useState<Omit<Vendor, "id">>(blank)
   const [filter, setFilter] = useState<VendorCategory | "all">("all")
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const totalQuoted = vendors.reduce((s, v) => s + v.quotedAmount, 0)
   const totalPaid = vendors.reduce((s, v) => s + v.paidAmount, 0)
   const booked = vendors.filter((v) => v.status !== "enquired" && v.status !== "cancelled").length
 
-  const save = () => {
+  const save = async () => {
     if (!form.name.trim()) return
-    if (editId) {
-      onChange(vendors.map((v) => (v.id === editId ? { ...form, id: editId } : v)))
-      setEditId(null)
+    setLoading(true)
+    if (weddingId) {
+      if (editId) {
+        const res = await vendorsApi.update(weddingId, editId, form)
+        if (res.success && res.data?.vendor) {
+          onChange(vendors.map((v) => (v.id === editId ? res.data.vendor : v)))
+        }
+      } else {
+        const res = await vendorsApi.create(weddingId, form)
+        if (res.success && res.data?.vendor) {
+          onChange([...vendors, res.data.vendor])
+        }
+      }
     } else {
-      onChange([...vendors, { ...form, id: generateId() }])
+      if (editId) {
+        onChange(vendors.map((v) => (v.id === editId ? { ...form, id: editId } : v)))
+      } else {
+        onChange([...vendors, { ...form, id: Math.random().toString(36).substring(2, 9) }])
+      }
     }
     setForm(blank)
+    setEditId(null)
     setShowForm(false)
+    setLoading(false)
   }
 
   const startEdit = (v: Vendor) => {
@@ -54,7 +73,12 @@ export default function Vendors({ vendors, onChange }: Props) {
     setShowForm(true)
   }
 
-  const remove = (id: string) => onChange(vendors.filter((v) => v.id !== id))
+  const remove = async (id: string) => {
+    if (weddingId) {
+      await vendorsApi.delete(weddingId, id)
+    }
+    onChange(vendors.filter((v) => v.id !== id))
+  }
 
   const filtered = filter === "all" ? vendors : vendors.filter((v) => v.category === filter)
   const usedCats = Array.from(new Set(vendors.map((v) => v.category)))
@@ -69,7 +93,7 @@ export default function Vendors({ vendors, onChange }: Props) {
           { label: "Total Quoted", value: formatINR(totalQuoted), color: "#D4900A" },
           { label: "Total Paid", value: formatINR(totalPaid), color: "#5A1228" },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4">
+          <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4 shadow-sm">
             <div className="font-playfair text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs text-[#9B8B7A] mt-1">{s.label}</div>
           </div>
@@ -84,8 +108,8 @@ export default function Vendors({ vendors, onChange }: Props) {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2">
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Vendor Name</label>
-              <input type="text" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="e.g. Ravi Photography" className={inp} />
+              <label className="block text-xs font-medium text-[#6B5744] mb-1">Vendor Name *</label>
+              <input type="text" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="e.g. Royal Caterers" className={inp} />
             </div>
             <div>
               <label className="block text-xs font-medium text-[#6B5744] mb-1">Category</label>
@@ -117,7 +141,7 @@ export default function Vendors({ vendors, onChange }: Props) {
             </div>
           </div>
           <div className="mt-4 flex gap-2">
-            <button onClick={save} disabled={!form.name.trim()} className={btnPrimary}>{editId ? "Update" : "+ Add Vendor"}</button>
+            <button onClick={save} disabled={!form.name.trim() || loading} className={btnPrimary}>{loading ? "Saving..." : editId ? "Update" : "+ Add Vendor"}</button>
             <button onClick={() => { setShowForm(false); setEditId(null); setForm(blank) }} className="bg-[#F0E6D3] hover:bg-[#E8D5B7] text-[#6B5744] font-medium px-5 py-2 rounded-lg text-sm transition-colors">Cancel</button>
           </div>
         </div>
@@ -157,7 +181,7 @@ export default function Vendors({ vendors, onChange }: Props) {
               </thead>
               <tbody>
                 {filtered.map((v, i) => {
-                  const s = STATUS_STYLE[v.status]
+                  const s = STATUS_STYLE[v.status] || STATUS_STYLE.enquired
                   const due = v.quotedAmount - v.paidAmount
                   return (
                     <tr key={v.id} className={`border-t border-[#F0E6D3] hover:bg-[#FFFBF5] transition-colors ${i % 2 ? "bg-[#FFFBF5]" : ""}`}>
@@ -186,7 +210,7 @@ export default function Vendors({ vendors, onChange }: Props) {
               <tfoot>
                 <tr className="border-t-2 border-[#D4900A] bg-[#FEF0D7]">
                   <td className="px-5 py-3 font-bold text-[#2C1810]" colSpan={3}>Total</td>
-                  <td className="px-5 py-3 text-right font-mono font-bold text-[#6B5744]">{formatINR(totalQuoted)}</td>
+                  <td className="px-5 py-[#6B5744] text-right font-mono font-bold">{formatINR(totalQuoted)}</td>
                   <td className="px-5 py-3 text-right font-mono font-bold text-[#8B1D3B]">{formatINR(totalPaid)}</td>
                   <td className="px-5 py-3 text-right font-mono font-bold hidden md:table-cell" style={{ color: totalQuoted - totalPaid > 0 ? "#DC2626" : "#166534" }}>
                     {formatINR(totalQuoted - totalPaid)}
@@ -200,7 +224,7 @@ export default function Vendors({ vendors, onChange }: Props) {
       ) : vendors.length === 0 ? (
         <div className="text-center py-20 text-[#C4A882]">
           <div className="text-6xl mb-4">🤝</div>
-          <p className="text-sm font-medium">No vendors yet.</p>
+          <p className="text-sm font-medium">No vendors added yet.</p>
           <p className="text-xs mt-1">Track all your wedding service providers here.</p>
         </div>
       ) : null}

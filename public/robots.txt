@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /weddings/
+
+Sitemap: https://shaadiplanner.onrender.com/sitemap.xml

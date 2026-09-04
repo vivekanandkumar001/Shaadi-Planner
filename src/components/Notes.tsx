@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { Note } from "../types"
-import { generateId } from "../utils"
+import { notesApi } from "../api"
 
 interface Props {
   notes: Note[]
   onChange: (n: Note[]) => void
+  weddingId?: string
 }
 
 const COLORS = [
@@ -19,31 +20,59 @@ const COLORS = [
 
 const blank = { title: "", content: "", color: "#FFFBF5" }
 
-export default function Notes({ notes, onChange }: Props) {
+export default function Notes({ notes, onChange, weddingId }: Props) {
   const [form, setForm] = useState(blank)
   const [editId, setEditId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const add = () => {
+  const add = async () => {
     if (!form.title.trim() && !form.content.trim()) return
-    onChange([
-      { id: generateId(), title: form.title, content: form.content, color: form.color, createdAt: new Date().toISOString() },
-      ...notes,
-    ])
+    setLoading(true)
+    if (weddingId) {
+      const res = await notesApi.create(weddingId, form)
+      if (res.success && res.data?.note) {
+        onChange([res.data.note, ...notes])
+      }
+    } else {
+      onChange([
+        { id: Math.random().toString(36).substring(2, 9), title: form.title, content: form.content, color: form.color, createdAt: new Date().toISOString() },
+        ...notes,
+      ])
+    }
     setForm(blank)
+    setLoading(false)
   }
 
-  const remove = (id: string) => onChange(notes.filter((n) => n.id !== id))
+  const remove = async (id: string) => {
+    if (weddingId) {
+      await notesApi.delete(weddingId, id)
+    }
+    onChange(notes.filter((n) => n.id !== id))
+  }
 
   const startEdit = (n: Note) => { setEditId(n.id); setEditContent(n.content) }
 
-  const saveEdit = (id: string) => {
-    onChange(notes.map((n) => (n.id === id ? { ...n, content: editContent } : n)))
+  const saveEdit = async (id: string) => {
+    const target = notes.find((n) => n.id === id)
+    if (!target) return
+    const updated = { ...target, content: editContent }
+    onChange(notes.map((n) => (n.id === id ? updated : n)))
     setEditId(null)
+    if (weddingId) {
+      await notesApi.update(weddingId, id, updated)
+    }
   }
 
-  const updateColor = (id: string, color: string) =>
-    onChange(notes.map((n) => (n.id === id ? { ...n, color } : n)))
+  const updateColor = async (id: string, color: string) => {
+    const target = notes.find((n) => n.id === id)
+    if (!target) return
+    const updated = { ...target, color }
+    onChange(notes.map((n) => (n.id === id ? updated : n)))
+    if (weddingId) {
+      await notesApi.update(weddingId, id, updated)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -91,10 +120,10 @@ export default function Notes({ notes, onChange }: Props) {
           </div>
           <button
             onClick={add}
-            disabled={!form.title.trim() && !form.content.trim()}
-            className="bg-[#8B1D3B] hover:bg-[#6B1530] disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium px-5 py-2 rounded-lg text-sm transition-colors active:scale-95"
+            disabled={(!form.title.trim() && !form.content.trim()) || loading}
+            className="bg-[#8B1D3B] hover:bg-[#6B1530] disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium px-5 py-2 rounded-lg text-sm transition-colors active:scale-95 shadow-sm"
           >
-            + Add Note
+            {loading ? "Adding..." : "+ Add Note"}
           </button>
         </div>
       </div>
@@ -108,7 +137,7 @@ export default function Notes({ notes, onChange }: Props) {
             return (
               <div
                 key={note.id}
-                className="rounded-2xl border-2 p-5 transition-colors"
+                className="rounded-2xl border-2 p-5 transition-colors shadow-sm"
                 style={{ background: note.color, borderColor: colorMeta.border }}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
@@ -120,7 +149,7 @@ export default function Notes({ notes, onChange }: Props) {
                   <div className="flex gap-1 ml-auto flex-shrink-0">
                     <button
                       onClick={() => isEditing ? saveEdit(note.id) : startEdit(note)}
-                      className="text-xs text-[#9B8B7A] hover:text-[#8B1D3B] px-1.5 py-0.5 rounded transition-colors"
+                      className="text-xs text-[#9B8B7A] hover:text-[#8B1D3B] px-1.5 py-0.5 rounded transition-colors font-medium"
                     >
                       {isEditing ? "Save" : "Edit"}
                     </button>
@@ -152,7 +181,7 @@ export default function Notes({ notes, onChange }: Props) {
                     ))}
                   </div>
                   <span className="text-[10px] text-[#9B8B7A]">
-                    {new Date(note.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                    {note.createdAt ? new Date(note.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : ""}
                   </span>
                 </div>
               </div>
@@ -162,7 +191,7 @@ export default function Notes({ notes, onChange }: Props) {
       ) : (
         <div className="text-center py-20 text-[#C4A882]">
           <div className="text-6xl mb-4">📝</div>
-          <p className="text-sm font-medium">No notes yet.</p>
+          <p className="text-sm font-medium">No notes added yet.</p>
           <p className="text-xs mt-1">Jot down ideas, vendor details, or inspiration.</p>
         </div>
       )}
