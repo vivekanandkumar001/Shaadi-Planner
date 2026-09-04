@@ -1,4 +1,10 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"
+const getApiBaseUrl = () => {
+  const rawUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"
+  const cleaned = rawUrl.replace(/\/$/, "")
+  return cleaned.endsWith("/api/v1") ? cleaned : `${cleaned}/api/v1`
+}
+
+const API_BASE_URL = getApiBaseUrl()
 
 export interface ApiResponse<T = any> {
   success: boolean

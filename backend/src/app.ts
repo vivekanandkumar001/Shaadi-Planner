@@ -32,14 +32,22 @@ app.use(
 )
 
 // CORS configuration (no wildcard in production)
-const allowedOrigins = [env.FRONTEND_URL, "http://localhost:5173", "http://localhost:8443", "http://127.0.0.1:5173"]
+const allowedOrigins = [
+  env.FRONTEND_URL ? env.FRONTEND_URL.replace(/\/$/, "") : "",
+  "http://localhost:5173",
+  "http://localhost:8443",
+  "http://127.0.0.1:5173",
+].filter(Boolean)
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || env.NODE_ENV === "development") {
+      if (!origin) return callback(null, true)
+      const cleanOrigin = origin.replace(/\/$/, "")
+      if (allowedOrigins.includes(cleanOrigin) || env.NODE_ENV === "development") {
         callback(null, true)
       } else {
-        callback(new Error("Not allowed by CORS"))
+        callback(new Error(`Not allowed by CORS: ${origin}`))
       }
     },
     credentials: true,

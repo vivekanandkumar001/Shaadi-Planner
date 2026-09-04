@@ -20,7 +20,16 @@ services:
           property: connectionString
 
       - key: FRONTEND_URL
-        value: https://YOUR-FRONTEND-URL.onrender.com
+        sync: false
+
+      - key: SESSION_SECRET
+        generateValue: true
+
+      - key: COOKIE_SECRET
+        generateValue: true
+
+      - key: JWT_SECRET
+        generateValue: true
 
   - type: web
     name: shaadi-planner-frontend
@@ -33,7 +42,7 @@ services:
 
     envVars:
       - key: VITE_API_URL
-        value: https://YOUR-BACKEND-URL.onrender.com
+        sync: false
 
     routes:
       - type: rewrite

@@ -5,7 +5,9 @@ interface ExportModalProps {
 
 export default function ExportModal({ weddingId, onClose }: ExportModalProps) {
   const handleExport = (type: "guests" | "vendors" | "functions" | "checklist") => {
-    const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"
+    const rawUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"
+    const cleaned = rawUrl.replace(/\/$/, "")
+    const backendUrl = cleaned.endsWith("/api/v1") ? cleaned : `${cleaned}/api/v1`
     window.open(`${backendUrl}/exports/${weddingId}/csv/${type}`, "_blank")
   }
 
