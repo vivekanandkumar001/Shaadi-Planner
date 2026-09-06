@@ -12,9 +12,9 @@ process.on("unhandledRejection", (reason) => {
 
 console.log("🚀 Initializing Shaadi Planner backend process...")
 
-import { env } from "./config"
-import { prisma } from "./db/prisma"
-import app from "./app"
+const { env } = await import("./config")
+const { prisma } = await import("./db/prisma")
+const app = (await import("./app")).default
 
 const PORT = Number(process.env.PORT || env.PORT || 5000)
 
