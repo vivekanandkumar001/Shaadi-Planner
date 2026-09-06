@@ -1,3 +1,7 @@
+import app from "./app"
+import { env } from "./config"
+import { prisma } from "./db/prisma"
+
 process.on("uncaughtException", (error) => {
   console.error("🔥 UNCAUGHT EXCEPTION DURING BACKEND STARTUP/RUNTIME:")
   console.error(error)
@@ -11,10 +15,6 @@ process.on("unhandledRejection", (reason) => {
 })
 
 console.log("🚀 Initializing Shaadi Planner backend process...")
-
-const { env } = await import("./config")
-const { prisma } = await import("./db/prisma")
-const app = (await import("./app")).default
 
 const PORT = Number(process.env.PORT || env.PORT || 5000)
 

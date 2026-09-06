@@ -4,9 +4,9 @@ services:
     runtime: node
     region: virginia
 
-    buildCommand: pnpm install --frozen-lockfile && pnpm prisma generate && pnpm prisma migrate deploy
+    buildCommand: pnpm install --frozen-lockfile && pnpm prisma generate && pnpm build:server && pnpm prisma migrate deploy
 
-    startCommand: pnpm server
+    startCommand: pnpm start
 
     healthCheckPath: /api/v1/health
 
