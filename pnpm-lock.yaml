@@ -35,12 +35,18 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.3
+      prisma:
+        specifier: 6.19.3
+        version: 6.19.3(typescript@5.9.3)
       react:
         specifier: ^19.0.0
         version: 19.2.4
       react-dom:
         specifier: ^19.0.0
         version: 19.2.4(react@19.2.4)
+      tsx:
+        specifier: ^4.23.13
+        version: 4.23.13
       zod:
         specifier: ^4.0.0
         version: 4.5.4
@@ -84,18 +90,12 @@ importers:
       oxfmt:
         specifier: ^0.2.0
         version: 0.2.0
-      prisma:
-        specifier: 6.19.3
-        version: 6.19.3(typescript@5.9.3)
       supertest:
         specifier: ^7.2.2
         version: 7.2.2
       tailwindcss:
         specifier: ^4.0.0
         version: 4.2.2
-      tsx:
-        specifier: ^4.23.13
-        version: 4.23.13
       typescript:
         specifier: ^5.7.0
         version: 5.9.3

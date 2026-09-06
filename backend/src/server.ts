@@ -1,24 +1,26 @@
+process.on("uncaughtException", (error) => {
+  console.error("🔥 UNCAUGHT EXCEPTION DURING BACKEND STARTUP/RUNTIME:")
+  console.error(error)
+  process.exit(1)
+})
+
+process.on("unhandledRejection", (reason) => {
+  console.error("🔥 UNHANDLED REJECTION DURING BACKEND STARTUP/RUNTIME:")
+  console.error(reason)
+  process.exit(1)
+})
+
+console.log("🚀 Initializing Shaadi Planner backend process...")
+
+import { env } from "./config"
 import { prisma } from "./db/prisma"
 import app from "./app"
-import { env } from "./config"
 
 const PORT = Number(process.env.PORT || env.PORT || 5000)
 
 console.log("Starting Shaadi Planner backend...")
 console.log(`NODE_ENV=${env.NODE_ENV}`)
 console.log(`PORT=${PORT}`)
-
-process.on("uncaughtException", (error) => {
-  console.error("UNCAUGHT EXCEPTION:")
-  console.error(error)
-  process.exit(1)
-})
-
-process.on("unhandledRejection", (reason) => {
-  console.error("UNHANDLED REJECTION:")
-  console.error(reason)
-  process.exit(1)
-})
 
 const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(
