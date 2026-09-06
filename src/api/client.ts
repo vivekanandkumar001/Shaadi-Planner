@@ -63,7 +63,7 @@ export async function apiRequest<T = any>(
       success: false,
       error: {
         code: "NETWORK_ERROR",
-        message: "Unable to connect to Shaadi Planner server. Please check your internet connection.",
+        message: "Unable to connect to Shaadi Planner backend server. If using Render Free Tier, please allow 30–50 seconds for the backend service to wake up from sleep mode, then try again.",
       },
     }
   }
