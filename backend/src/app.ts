@@ -44,7 +44,11 @@ app.use(
     origin: (origin, callback) => {
       if (!origin) return callback(null, true)
       const cleanOrigin = origin.replace(/\/$/, "")
-      if (allowedOrigins.includes(cleanOrigin) || env.NODE_ENV === "development") {
+      const isAllowed =
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.endsWith(".onrender.com") ||
+        env.NODE_ENV === "development"
+      if (isAllowed) {
         callback(null, true)
       } else {
         callback(new Error(`Not allowed by CORS: ${origin}`))
