@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Vendor, VendorCategory, VendorStatus } from "../types"
-import { formatINR, inp, btnPrimary } from "../utils"
+import { formatINR } from "../utils"
 import { vendorsApi } from "../api"
 
 interface Props {
@@ -10,18 +10,18 @@ interface Props {
 }
 
 const CATEGORIES: Record<VendorCategory, string> = {
-  venue: "Venue", catering: "Catering", decoration: "Decoration",
-  photography: "Photography", music: "Music / Band", mehendi: "Mehendi",
-  makeup: "Makeup / Hair", transport: "Transport", invitation: "Invitations",
-  pandit: "Pandit / Priest", other: "Other",
+  venue: "Venue & Palace", catering: "Catering & Food", decoration: "Decoration & Flowers",
+  photography: "Photography & Video", music: "Music, DJ & Band", mehendi: "Mehendi Artist",
+  makeup: "Makeup & Hair", transport: "Transport & Luxury Cars", invitation: "Invitations & Stationery",
+  pandit: "Pandit & Rituals", other: "Other Services",
 }
 
 const STATUS_STYLE: Record<VendorStatus, { bg: string; text: string; label: string }> = {
-  enquired: { bg: "#F0E6D3", text: "#6B5744", label: "Enquired" },
-  booked: { bg: "#DBEAFE", text: "#1D4ED8", label: "Booked" },
-  paid: { bg: "#DCFCE7", text: "#166534", label: "Paid" },
-  completed: { bg: "#F0FDF4", text: "#15803D", label: "Completed" },
-  cancelled: { bg: "#FEE2E2", text: "#B91C1C", label: "Cancelled" },
+  enquired: { bg: "bg-amber-50 border-amber-200", text: "text-amber-800", label: "Enquired" },
+  booked: { bg: "bg-blue-50 border-blue-200", text: "text-blue-800", label: "Booked" },
+  paid: { bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-800", label: "Paid Deposit" },
+  completed: { bg: "bg-green-50 border-green-200", text: "text-green-800", label: "Completed" },
+  cancelled: { bg: "bg-rose-50 border-rose-200", text: "text-rose-800", label: "Cancelled" },
 }
 
 const blank: Omit<Vendor, "id"> = {
@@ -81,153 +81,263 @@ export default function Vendors({ vendors, onChange, weddingId }: Props) {
   }
 
   const filtered = filter === "all" ? vendors : vendors.filter((v) => v.category === filter)
-  const usedCats = Array.from(new Set(vendors.map((v) => v.category)))
 
   return (
-    <div className="space-y-6">
-      {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: "Total Vendors", value: vendors.length, color: "#8B1D3B" },
-          { label: "Booked", value: booked, color: "#166534" },
-          { label: "Total Quoted", value: formatINR(totalQuoted), color: "#D4900A" },
-          { label: "Total Paid", value: formatINR(totalPaid), color: "#5A1228" },
-        ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4 shadow-sm">
-            <div className="font-playfair text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-[#9B8B7A] mt-1">{s.label}</div>
-          </div>
-        ))}
+    <div className="space-y-8 animate-fade-in-up">
+      {/* SUMMARY CARDS */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="luxury-card p-5 text-left">
+          <div className="font-cinzel text-2xl font-bold text-[#7A1631]">{vendors.length}</div>
+          <div className="text-xs font-semibold text-[#75676B] mt-1 uppercase tracking-wider">Total Vendors</div>
+        </div>
+        <div className="luxury-card p-5 text-left">
+          <div className="font-cinzel text-2xl font-bold text-emerald-600">{booked}</div>
+          <div className="text-xs font-semibold text-[#75676B] mt-1 uppercase tracking-wider">Booked / Active</div>
+        </div>
+        <div className="luxury-card p-5 text-left">
+          <div className="font-cinzel text-2xl font-bold text-[#D4AF37]">{formatINR(totalQuoted)}</div>
+          <div className="text-xs font-semibold text-[#75676B] mt-1 uppercase tracking-wider">Total Quoted</div>
+        </div>
+        <div className="luxury-card p-5 text-left">
+          <div className="font-cinzel text-2xl font-bold text-[#1A1617]">{formatINR(totalPaid)}</div>
+          <div className="text-xs font-semibold text-[#75676B] mt-1 uppercase tracking-wider">Total Paid</div>
+        </div>
       </div>
 
-      {/* Add / Edit form */}
-      {showForm ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] p-6">
-          <h2 className="font-playfair text-xl font-bold text-[#8B1D3B] mb-5">
-            {editId ? "Edit Vendor" : "विक्रेता जोड़ें / Add Vendor"}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2">
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Vendor Name *</label>
-              <input type="text" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="e.g. Royal Caterers" className={inp} />
-            </div>
+      {/* HEADER & ACTION */}
+      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-[#EAE0D5] pb-4">
+        <div>
+          <h2 className="font-playfair text-2xl font-bold text-[#7A1631]">Vendor Directory & Payments</h2>
+          <p className="text-xs text-[#75676B] font-medium mt-0.5">Shortlist, book, and track financial balances across wedding services</p>
+        </div>
+        <button
+          onClick={() => {
+            if (showForm) {
+              setShowForm(false)
+              setEditId(null)
+              setForm(blank)
+            } else {
+              setShowForm(true)
+            }
+          }}
+          className="luxury-button-primary font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+        >
+          {showForm ? "✕ Close Form" : "+ Add Vendor"}
+        </button>
+      </div>
+
+      {/* VENDOR EDIT/ADD FORM */}
+      {showForm && (
+        <div className="luxury-card p-6 sm:p-8 space-y-6">
+          <h3 className="font-playfair text-xl font-bold text-[#7A1631]">
+            {editId ? "Edit Vendor Details" : "Register New Vendor"}
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs font-medium">
             <div>
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Category</label>
-              <select value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value as VendorCategory }))} className={inp}>
-                {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              <label className="block text-[#1A1617] font-semibold mb-1.5">Vendor / Agency Name *</label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="e.g. Royal Decorators Jaipur"
+                className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[#1A1617] font-semibold mb-1.5">Category *</label>
+              <select
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value as VendorCategory })}
+                className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] cursor-pointer"
+              >
+                {Object.entries(CATEGORIES).map(([k, v]) => (
+                  <option key={k} value={k}>
+                    {v}
+                  </option>
+                ))}
               </select>
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Contact</label>
-              <input type="text" value={form.contact} onChange={(e) => setForm((p) => ({ ...p, contact: e.target.value }))} placeholder="Phone / email" className={inp} />
+              <label className="block text-[#1A1617] font-semibold mb-1.5">Contact Number / Email</label>
+              <input
+                type="text"
+                value={form.contact}
+                onChange={(e) => setForm({ ...form, contact: e.target.value })}
+                placeholder="+91 98765 43210"
+                className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631]"
+              />
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Quoted Amount ₹</label>
-              <input type="number" min="0" value={form.quotedAmount || ""} onChange={(e) => setForm((p) => ({ ...p, quotedAmount: parseFloat(e.target.value) || 0 }))} placeholder="0" className={inp} />
+              <label className="block text-[#1A1617] font-semibold mb-1.5">Quoted Amount (₹)</label>
+              <input
+                type="number"
+                min="0"
+                value={form.quotedAmount}
+                onChange={(e) => setForm({ ...form, quotedAmount: parseFloat(e.target.value) || 0 })}
+                className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631]"
+              />
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Paid So Far ₹</label>
-              <input type="number" min="0" value={form.paidAmount || ""} onChange={(e) => setForm((p) => ({ ...p, paidAmount: parseFloat(e.target.value) || 0 }))} placeholder="0" className={inp} />
+              <label className="block text-[#1A1617] font-semibold mb-1.5">Paid Amount (₹)</label>
+              <input
+                type="number"
+                min="0"
+                value={form.paidAmount}
+                onChange={(e) => setForm({ ...form, paidAmount: parseFloat(e.target.value) || 0 })}
+                className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631]"
+              />
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Status</label>
-              <select value={form.status} onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as VendorStatus }))} className={inp}>
-                {Object.entries(STATUS_STYLE).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+              <label className="block text-[#1A1617] font-semibold mb-1.5">Booking Status</label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value as VendorStatus })}
+                className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] cursor-pointer"
+              >
+                <option value="enquired">Enquired</option>
+                <option value="booked">Booked</option>
+                <option value="paid">Paid Deposit</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
               </select>
             </div>
-            <div className="sm:col-span-2 lg:col-span-2">
-              <label className="block text-xs font-medium text-[#6B5744] mb-1">Notes</label>
-              <input type="text" value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))} placeholder="Any notes..." className={inp} />
-            </div>
           </div>
-          <div className="mt-4 flex gap-2">
-            <button onClick={save} disabled={!form.name.trim() || loading} className={btnPrimary}>{loading ? "Saving..." : editId ? "Update" : "+ Add Vendor"}</button>
-            <button onClick={() => { setShowForm(false); setEditId(null); setForm(blank) }} className="bg-[#F0E6D3] hover:bg-[#E8D5B7] text-[#6B5744] font-medium px-5 py-2 rounded-lg text-sm transition-colors">Cancel</button>
+
+          <div className="pt-2 flex items-center gap-3">
+            <button
+              onClick={save}
+              disabled={loading}
+              className="luxury-button-primary font-bold px-8 py-3 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+            >
+              {loading ? "Saving..." : editId ? "Update Vendor" : "Save Vendor"}
+            </button>
+            <button
+              onClick={() => {
+                setShowForm(false)
+                setEditId(null)
+                setForm(blank)
+              }}
+              className="px-5 py-3 rounded-xl text-xs font-semibold border border-[#EAE0D5] text-[#75676B] hover:bg-[#FCF8F2] transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
           </div>
+        </div>
+      )}
+
+      {/* CATEGORY FILTERS */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        <button
+          onClick={() => setFilter("all")}
+          className={`text-xs font-semibold px-4 py-2 rounded-xl border transition-all cursor-pointer whitespace-nowrap uppercase ${
+            filter === "all"
+              ? "bg-[#7A1631] text-white border-[#7A1631] shadow-sm"
+              : "bg-white text-[#75676B] border-[#EAE0D5] hover:bg-[#FCF8F2]"
+          }`}
+        >
+          All Categories ({vendors.length})
+        </button>
+        {Object.entries(CATEGORIES).map(([catKey, catName]) => {
+          const count = vendors.filter((v) => v.category === catKey).length
+          if (count === 0 && filter !== catKey) return null
+          return (
+            <button
+              key={catKey}
+              onClick={() => setFilter(catKey as VendorCategory)}
+              className={`text-xs font-semibold px-4 py-2 rounded-xl border transition-all cursor-pointer whitespace-nowrap uppercase ${
+                filter === catKey
+                  ? "bg-[#7A1631] text-white border-[#7A1631] shadow-sm"
+                  : "bg-white text-[#75676B] border-[#EAE0D5] hover:bg-[#FCF8F2]"
+              }`}
+            >
+              {catName} ({count})
+            </button>
+          )
+        })}
+      </div>
+
+      {/* VENDOR CARD GRID */}
+      {filtered.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map((v) => {
+            const st = STATUS_STYLE[v.status]
+            const remaining = v.quotedAmount - v.paidAmount
+            const pct = v.quotedAmount ? Math.min(100, Math.round((v.paidAmount / v.quotedAmount) * 100)) : 0
+
+            return (
+              <div key={v.id} className="luxury-card p-6 flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-[10px] font-bold text-[#75676B] uppercase tracking-wider block">
+                        {CATEGORIES[v.category]}
+                      </span>
+                      <h3 className="font-playfair text-lg font-bold text-[#7A1631] mt-0.5">{v.name}</h3>
+                    </div>
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border uppercase tracking-wider ${st.bg} ${st.text}`}>
+                      {st.label}
+                    </span>
+                  </div>
+
+                  {v.contact && (
+                    <div className="text-xs text-[#75676B] flex items-center gap-1.5 font-medium">
+                      <span>📞</span> <span>{v.contact}</span>
+                    </div>
+                  )}
+
+                  {/* Financial Breakdown */}
+                  <div className="bg-[#FCF8F2] p-3.5 rounded-xl border border-[#EAE0D5] space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[#75676B]">Quoted:</span>
+                      <span className="font-bold text-[#1A1617]">{formatINR(v.quotedAmount)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[#75676B]">Paid:</span>
+                      <span className="font-bold text-emerald-700">{formatINR(v.paidAmount)}</span>
+                    </div>
+                    <div className="flex items-center justify-between border-t border-[#EAE0D5] pt-1.5 font-semibold">
+                      <span className="text-[#75676B]">Remaining Dues:</span>
+                      <span className={remaining > 0 ? "text-rose-700 font-bold" : "text-emerald-700"}>
+                        {formatINR(remaining > 0 ? remaining : 0)}
+                      </span>
+                    </div>
+                    <div className="w-full bg-[#EAE0D5] rounded-full h-1.5 overflow-hidden mt-1">
+                      <div className="bg-[#D4AF37] h-1.5 rounded-full" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-[#EAE0D5] flex items-center justify-end gap-2 text-xs">
+                  <button
+                    onClick={() => startEdit(v)}
+                    className="px-3 py-1.5 rounded-lg border border-[#EAE0D5] text-[#7A1631] font-semibold hover:bg-[#FCF8F2] cursor-pointer"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => remove(v.id)}
+                    className="px-3 py-1.5 rounded-lg border border-rose-200 text-rose-700 font-semibold bg-rose-50 hover:bg-rose-100 cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )
+          })}
         </div>
       ) : (
-        <button onClick={() => setShowForm(true)} className={btnPrimary + " self-start"}>
-          + Add Vendor
-        </button>
-      )}
-
-      {/* Filter */}
-      {vendors.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          <button onClick={() => setFilter("all")} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filter === "all" ? "bg-[#8B1D3B] text-white" : "bg-[#F0E6D3] text-[#6B5744] hover:bg-[#E8D5B7]"}`}>All</button>
-          {usedCats.map((c) => (
-            <button key={c} onClick={() => setFilter(c)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filter === c ? "bg-[#8B1D3B] text-white" : "bg-[#F0E6D3] text-[#6B5744] hover:bg-[#E8D5B7]"}`}>
-              {CATEGORIES[c]}
-            </button>
-          ))}
+        <div className="luxury-card p-12 text-center text-[#75676B] space-y-3">
+          <div className="text-4xl">🤝</div>
+          <p className="text-sm font-semibold">No vendor entries registered for this category.</p>
+          <p className="text-xs">Add venue managers, caterers, photographers, and decorators above.</p>
         </div>
       )}
-
-      {/* Vendor list */}
-      {filtered.length > 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-[#FEF0D7] text-[#6B5744] border-b border-[#E8D5B7]">
-                  <th className="text-left px-5 py-3 font-medium">Vendor</th>
-                  <th className="text-left px-5 py-3 font-medium hidden sm:table-cell">Category</th>
-                  <th className="text-left px-5 py-3 font-medium">Status</th>
-                  <th className="text-right px-5 py-3 font-medium">Quoted</th>
-                  <th className="text-right px-5 py-3 font-medium">Paid</th>
-                  <th className="text-right px-5 py-3 font-medium hidden md:table-cell">Due</th>
-                  <th className="px-4 py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((v, i) => {
-                  const s = STATUS_STYLE[v.status] || STATUS_STYLE.enquired
-                  const due = v.quotedAmount - v.paidAmount
-                  return (
-                    <tr key={v.id} className={`border-t border-[#F0E6D3] hover:bg-[#FFFBF5] transition-colors ${i % 2 ? "bg-[#FFFBF5]" : ""}`}>
-                      <td className="px-5 py-3">
-                        <div className="font-medium text-[#2C1810]">{v.name}</div>
-                        {v.contact && <div className="text-xs text-[#9B8B7A]">{v.contact}</div>}
-                        {v.notes && <div className="text-xs text-[#C4A882] italic">{v.notes}</div>}
-                      </td>
-                      <td className="px-5 py-3 text-[#6B5744] hidden sm:table-cell">{CATEGORIES[v.category]}</td>
-                      <td className="px-5 py-3">
-                        <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ background: s.bg, color: s.text }}>{s.label}</span>
-                      </td>
-                      <td className="px-5 py-3 text-right font-mono text-[#6B5744]">{v.quotedAmount ? formatINR(v.quotedAmount) : "—"}</td>
-                      <td className="px-5 py-3 text-right font-mono font-semibold text-[#8B1D3B]">{v.paidAmount ? formatINR(v.paidAmount) : "—"}</td>
-                      <td className="px-5 py-3 text-right font-mono hidden md:table-cell" style={{ color: due > 0 ? "#DC2626" : "#166534" }}>
-                        {v.quotedAmount ? formatINR(due) : "—"}
-                      </td>
-                      <td className="px-4 py-3 flex gap-1">
-                        <button onClick={() => startEdit(v)} className="text-[#9B8B7A] hover:text-[#8B1D3B] transition-colors text-xs px-2 py-1 rounded">Edit</button>
-                        <button onClick={() => remove(v.id)} className="text-[#C4A882] hover:text-red-500 transition-colors text-xl leading-none">×</button>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-              <tfoot>
-                <tr className="border-t-2 border-[#D4900A] bg-[#FEF0D7]">
-                  <td className="px-5 py-3 font-bold text-[#2C1810]" colSpan={3}>Total</td>
-                  <td className="px-5 py-[#6B5744] text-right font-mono font-bold">{formatINR(totalQuoted)}</td>
-                  <td className="px-5 py-3 text-right font-mono font-bold text-[#8B1D3B]">{formatINR(totalPaid)}</td>
-                  <td className="px-5 py-3 text-right font-mono font-bold hidden md:table-cell" style={{ color: totalQuoted - totalPaid > 0 ? "#DC2626" : "#166534" }}>
-                    {formatINR(totalQuoted - totalPaid)}
-                  </td>
-                  <td />
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-      ) : vendors.length === 0 ? (
-        <div className="text-center py-20 text-[#C4A882]">
-          <div className="text-6xl mb-4">🤝</div>
-          <p className="text-sm font-medium">No vendors added yet.</p>
-          <p className="text-xs mt-1">Track all your wedding service providers here.</p>
-        </div>
-      ) : null}
     </div>
   )
 }

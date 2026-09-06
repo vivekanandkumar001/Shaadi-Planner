@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { Guest, TableData } from "../types"
-import { inp, btnPrimary } from "../utils"
 import { seatingApi } from "../api"
 
 interface Props {
@@ -64,142 +63,175 @@ export default function Seating({ tables, guests, onTablesChange, onGuestsChange
   const totalCapacity = tables.reduce((s, t) => s + t.capacity, 0)
 
   return (
-    <div className="space-y-6">
-      {/* Summary */}
+    <div className="space-y-8 animate-fade-in-up">
+      {/* SUMMARY METRICS */}
       {tables.length > 0 && (
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: "Tables", value: tables.length, color: "#8B1D3B" },
-            { label: "Seated", value: totalSeated, color: "#166534" },
-            { label: "Total Capacity", value: totalCapacity, color: "#D4900A" },
-          ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4 text-center shadow-sm">
-              <div className="font-playfair text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-xs text-[#9B8B7A] mt-1">{s.label}</div>
-            </div>
-          ))}
+        <div className="grid grid-cols-3 gap-4">
+          <div className="luxury-card p-5 text-left">
+            <div className="font-cinzel text-2xl font-bold text-[#7A1631]">{tables.length}</div>
+            <div className="text-xs font-semibold text-[#75676B] mt-1 uppercase tracking-wider">Configured Tables</div>
+          </div>
+          <div className="luxury-card p-5 text-left">
+            <div className="font-cinzel text-2xl font-bold text-emerald-600">{totalSeated}</div>
+            <div className="text-xs font-semibold text-[#75676B] mt-1 uppercase tracking-wider">Assigned Guests</div>
+          </div>
+          <div className="luxury-card p-5 text-left">
+            <div className="font-cinzel text-2xl font-bold text-[#D4AF37]">{totalCapacity}</div>
+            <div className="text-xs font-semibold text-[#75676B] mt-1 uppercase tracking-wider">Total Venue Capacity</div>
+          </div>
         </div>
       )}
 
       {errorMsg && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs p-3 rounded-lg flex items-center gap-2">
+        <div className="bg-rose-50 border border-rose-200 text-rose-800 text-xs p-3.5 rounded-xl flex items-center gap-2 shadow-sm">
           <span>⚠️</span>
-          <span>{errorMsg}</span>
+          <span className="font-medium">{errorMsg}</span>
         </div>
       )}
 
-      {/* Add table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] p-6">
-        <h2 className="font-playfair text-xl font-bold text-[#8B1D3B] mb-1">बैठक व्यवस्था</h2>
-        <p className="text-xs text-[#9B8B7A] mb-5">Seating Planner — create tables and assign guests</p>
-        <div className="flex gap-3 flex-wrap items-end">
-          <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Table Name *</label>
+      {/* CREATE TABLE FORM */}
+      <div className="luxury-card p-6 sm:p-8 space-y-6">
+        <div className="border-b border-[#EAE0D5] pb-3">
+          <h2 className="font-playfair text-2xl font-bold text-[#7A1631]">Seating Planner & Table Layout</h2>
+          <p className="text-xs text-[#75676B] font-medium mt-0.5">Design seating capacity and assign confirmed guest parties</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-medium">
+          <div className="sm:col-span-2">
+            <label className="block text-[#1A1617] font-semibold mb-1.5">Table Name / Zone *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addTable()}
-              placeholder="e.g. Marigold Table"
-              className="border border-[#E8D5B7] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B1D3B]/25 focus:border-[#8B1D3B] bg-[#FFFBF5] w-48 transition-colors placeholder:text-[#C4A882]"
+              placeholder="e.g. VIP Family Table 1"
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631]"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Capacity</label>
+            <label className="block text-[#1A1617] font-semibold mb-1.5">Max Seat Capacity *</label>
             <input
               type="number"
               min="1"
               max="50"
               value={cap}
               onChange={(e) => setCap(e.target.value)}
-              className="border border-[#E8D5B7] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B1D3B]/25 focus:border-[#8B1D3B] bg-[#FFFBF5] w-24 transition-colors"
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631]"
             />
           </div>
-          <button onClick={addTable} disabled={!name.trim() || loading} className={btnPrimary}>
-            {loading ? "Adding..." : "+ Add Table"}
+        </div>
+
+        <div>
+          <button
+            onClick={addTable}
+            disabled={loading}
+            className="luxury-button-primary font-bold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+          >
+            {loading ? "Adding..." : "+ Create Table"}
           </button>
         </div>
       </div>
 
-      {/* Unassigned banner */}
-      {unassigned.length > 0 && tables.length > 0 && (
-        <div className="bg-[#FEF0D7] rounded-xl border border-[#E8D5B7] px-5 py-4 shadow-sm">
-          <p className="text-xs font-medium text-[#6B5744] mb-2">
-            {unassigned.length} guest{unassigned.length > 1 ? "s" : ""} unassigned — assign tables directly below:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {unassigned.map((g) => (
-              <div key={g.id} className="bg-white border border-[#E8D5B7] text-[#6B5744] text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-2xs">
-                <span>{g.name}</span>
-                <select
-                  value=""
-                  onChange={(e) => e.target.value && handleAssign(g.id, e.target.value)}
-                  className="text-[10px] border border-amber-300 rounded bg-[#FFFBF5] px-1 py-0.5"
-                >
-                  <option value="">Assign Table</option>
-                  {tables.map((t) => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </select>
-              </div>
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* UNASSIGNED GUESTS SIDEBAR */}
+        <div className="luxury-card overflow-hidden h-fit">
+          <div className="p-5 bg-[#FCF8F2]/60 border-b border-[#EAE0D5]">
+            <h3 className="font-playfair text-base font-bold text-[#7A1631]">
+              Unassigned Guests ({unassigned.length})
+            </h3>
+            <p className="text-xs text-[#75676B] font-medium mt-0.5">Select a table to assign each guest</p>
           </div>
-        </div>
-      )}
 
-      {/* Table cards */}
-      {tables.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tables.map((table) => {
-            const assigned = guests.filter((g) => g.tableId === table.id)
-            const headcount = assigned.reduce((s, g) => s + 1 + g.plusOnes, 0)
-            const pct = Math.min(100, Math.round((headcount / table.capacity) * 100))
-            const full = headcount >= table.capacity
-            return (
-              <div
-                key={table.id}
-                className={`bg-white rounded-2xl border-2 p-5 transition-colors shadow-sm ${full ? "border-[#D4900A]" : "border-[#E8D5B7] hover:border-[#8B1D3B]/30"}`}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-playfair font-bold text-[#2C1810]">{table.name}</h3>
-                    <p className={`text-xs mt-0.5 ${full ? "text-[#D4900A] font-medium" : "text-[#9B8B7A]"}`}>
-                      {headcount} / {table.capacity} seats{full ? " · Full" : ""}
-                    </p>
+          {unassigned.length > 0 ? (
+            <div className="divide-y divide-[#EAE0D5] max-h-[450px] overflow-y-auto">
+              {unassigned.map((g) => (
+                <div key={g.id} className="p-4 space-y-2 hover:bg-[#FCF8F2]/40 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="font-semibold text-xs text-[#1A1617]">{g.name}</div>
+                    <span className="text-[10px] uppercase font-bold text-[#75676B]">{g.side} side</span>
                   </div>
-                  <button onClick={() => removeTable(table.id)} className="text-[#C4A882] hover:text-red-500 transition-colors text-xl leading-none ml-2">×</button>
-                </div>
-                <div className="w-full bg-[#F0E6D3] rounded-full h-1.5 mb-4">
-                  <div
-                    className="h-1.5 rounded-full transition-all"
-                    style={{ width: `${pct}%`, background: full ? "#D4900A" : "#8B1D3B" }}
-                  />
-                </div>
-                {assigned.length === 0 ? (
-                  <p className="text-xs text-[#C4A882] italic">No guests assigned</p>
-                ) : (
-                  <div className="flex flex-wrap gap-1.5">
-                    {assigned.map((g) => (
-                      <span
-                        key={g.id}
-                        className={`text-xs px-2 py-0.5 rounded-full border font-medium ${g.side === "bride" ? "bg-pink-50 border-pink-200 text-pink-700" : g.side === "groom" ? "bg-blue-50 border-blue-200 text-blue-700" : "bg-purple-50 border-purple-200 text-purple-700"}`}
-                      >
-                        {g.name}{g.plusOnes > 0 ? ` +${g.plusOnes}` : ""}
-                      </span>
+                  <select
+                    onChange={(e) => e.target.value && handleAssign(g.id, e.target.value)}
+                    defaultValue=""
+                    className="w-full text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#EAE0D5] bg-[#FCF8F2] text-[#7A1631] focus:outline-none cursor-pointer"
+                  >
+                    <option value="" disabled>
+                      Assign to Table...
+                    </option>
+                    {tables.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} ({t.capacity} Max)
+                      </option>
                     ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center text-[#75676B] text-xs">
+              🎉 All confirmed guests have been assigned to tables!
+            </div>
+          )}
+        </div>
+
+        {/* TABLES GRID */}
+        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {tables.map((t) => {
+            const tableGuests = guests.filter((g) => g.tableId === t.id)
+            const seatedCount = tableGuests.reduce((s, g) => s + 1 + g.plusOnes, 0)
+            const isFull = seatedCount >= t.capacity
+
+            return (
+              <div key={t.id} className="luxury-card p-6 flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-playfair text-base font-bold text-[#7A1631]">{t.name}</h4>
+                      <span className="text-xs text-[#75676B] font-medium">
+                        Capacity: {seatedCount} / {t.capacity} Seats
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => removeTable(t.id)}
+                      className="text-rose-600 hover:text-rose-900 font-bold text-xs cursor-pointer px-2 py-1 bg-rose-50 rounded-lg"
+                    >
+                      Delete
+                    </button>
                   </div>
-                )}
+
+                  <div className="w-full bg-[#EAE0D5] rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`h-2 rounded-full transition-all ${isFull ? "bg-amber-600" : "bg-[#10B981]"}`}
+                      style={{ width: `${Math.min(100, (seatedCount / t.capacity) * 100)}%` }}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 pt-1">
+                    {tableGuests.map((g) => (
+                      <div
+                        key={g.id}
+                        className="text-xs bg-[#FCF8F2] p-2 rounded-lg border border-[#EAE0D5] flex items-center justify-between font-medium"
+                      >
+                        <span>{g.name} {g.plusOnes > 0 ? `(+${g.plusOnes})` : ""}</span>
+                        <button
+                          onClick={() => handleAssign(g.id, "")}
+                          className="text-[10px] font-bold text-rose-700 hover:underline"
+                        >
+                          Unassign
+                        </button>
+                      </div>
+                    ))}
+                    {tableGuests.length === 0 && (
+                      <div className="text-xs text-[#75676B] italic p-3 text-center bg-[#FCF8F2]/50 rounded-lg">
+                        Empty Table
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )
           })}
         </div>
-      ) : (
-        <div className="text-center py-20 text-[#C4A882]">
-          <div className="text-6xl mb-4">🪑</div>
-          <p className="text-sm font-medium">No tables added yet.</p>
-          <p className="text-xs mt-1">Add tables to arrange your baraat seating!</p>
-        </div>
-      )}
+      </div>
     </div>
   )
 }

@@ -27,38 +27,38 @@ export default function MigrateModal({ localData, onClose, onSuccess }: MigrateM
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl border border-[#E8D5B7] shadow-2xl max-w-md w-full p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-xl">
+    <div className="fixed inset-0 z-50 bg-[#1D060D]/70 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="luxury-card max-w-md w-full p-6 sm:p-8 space-y-5 animate-fade-in-up">
+        <div className="flex items-center gap-3 border-b border-[#EAE0D5] pb-4">
+          <div className="w-10 h-10 rounded-xl bg-[#7A1631] border border-[#D4AF37]/50 flex items-center justify-center text-xl shadow">
             📦
           </div>
           <div>
-            <h3 className="font-playfair text-base font-bold text-[#8B1D3B]">Existing Local Data Found</h3>
-            <p className="text-xs text-slate-500">Sync browser data to PostgreSQL</p>
+            <h3 className="font-playfair text-lg font-bold text-[#7A1631]">Local Browser Data Detected</h3>
+            <p className="text-xs text-[#75676B] font-medium">Import offline data into PostgreSQL Cloud</p>
           </div>
         </div>
 
-        <p className="text-xs text-slate-600 leading-relaxed bg-[#FFFBF5] p-3 rounded-lg border border-[#E8D5B7]">
+        <p className="text-xs text-[#1A1617] leading-relaxed bg-[#FCF8F2] p-4 rounded-xl border border-[#EAE0D5] font-medium">
           We detected an existing offline wedding plan in your browser ({localData.coupleName || "Shaadi Plan"}).
-          Would you like to import all your guests, budget, vendors, functions, checklist, and notes into your cloud account?
+          Would you like to import all guest lists, budget items, vendors, functions, checklists, and notes into your cloud account?
         </p>
 
-        {errorMsg && <div className="text-xs text-rose-600 bg-rose-50 p-2.5 rounded">⚠️ {errorMsg}</div>}
+        {errorMsg && <div className="text-xs text-rose-700 bg-rose-50 border border-rose-200 p-3 rounded-xl">⚠️ {errorMsg}</div>}
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-3 pt-1">
           <button
             onClick={onClose}
-            className="w-1/2 border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-medium hover:bg-slate-50"
+            className="w-1/2 border border-[#EAE0D5] text-[#7A1631] py-3 rounded-xl text-xs font-bold uppercase cursor-pointer hover:bg-[#FCF8F2]"
           >
             Keep Local Only
           </button>
           <button
             onClick={handleMigrate}
             disabled={loading}
-            className="w-1/2 bg-[#8B1D3B] hover:bg-[#6B1530] text-white py-2.5 rounded-lg text-xs font-medium shadow-md active:scale-95 disabled:opacity-50"
+            className="w-1/2 luxury-button-primary font-bold py-3 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
           >
-            {loading ? "Syncing..." : "Sync to PostgreSQL Cloud 🚀"}
+            {loading ? "Syncing..." : "Import to Cloud 🚀"}
           </button>
         </div>
       </div>

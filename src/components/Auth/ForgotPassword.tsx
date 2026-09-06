@@ -24,44 +24,48 @@ export default function ForgotPassword({ onBackToLogin }: ForgotPasswordProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFBF5] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-[#E8D5B7] shadow-xl p-6 sm:p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <div className="text-3xl">🔑</div>
-          <h2 className="font-playfair text-xl font-bold text-[#8B1D3B]">Reset Your Password</h2>
-          <p className="text-xs text-slate-500">Enter your account email to receive reset instructions</p>
+    <div className="min-h-screen bg-[#FCF8F2] flex items-center justify-center p-4 selection:bg-[#D4AF37]/30 selection:text-[#5C0F24]">
+      <div className="w-full max-w-md luxury-card p-8 sm:p-10 space-y-6 animate-fade-in-up">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-[#7A1631] border border-[#D4AF37]/50 flex items-center justify-center text-2xl mx-auto shadow-md">
+            🔑
+          </div>
+          <div className="space-y-1">
+            <h2 className="font-playfair text-2xl font-bold text-[#7A1631]">Reset Your Password</h2>
+            <p className="text-xs text-[#75676B] font-medium">Enter your account email to receive reset instructions</p>
+          </div>
         </div>
 
         {submitted ? (
           <div className="space-y-4">
-            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs p-4 rounded-lg leading-relaxed text-center">
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs p-4 rounded-xl leading-relaxed text-center font-medium">
               {msg}
             </div>
             <button
               onClick={onBackToLogin}
-              className="w-full bg-[#8B1D3B] text-white py-2.5 rounded-lg text-xs font-medium"
+              className="w-full luxury-button-primary font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
             >
               Return to Login
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs font-medium">
             <div>
-              <label className="block text-slate-700 font-medium mb-1">Email Address</label>
+              <label className="block text-[#1A1617] font-semibold mb-1.5">Email Address *</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full border border-[#E8D5B7] rounded-lg px-3 py-2.5 bg-[#FFFBF5] focus:outline-none focus:ring-2 focus:ring-[#8B1D3B]/20 focus:border-[#8B1D3B]"
+                className="w-full border border-[#EAE0D5] rounded-xl px-4 py-3 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631]"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#8B1D3B] hover:bg-[#6B1530] text-white font-medium py-3 rounded-lg transition-all shadow-md active:scale-95 disabled:opacity-50"
+              className="w-full luxury-button-primary font-semibold py-3.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
             >
               {loading ? "Sending..." : "Send Reset Link"}
             </button>
@@ -70,7 +74,7 @@ export default function ForgotPassword({ onBackToLogin }: ForgotPasswordProps) {
               <button
                 type="button"
                 onClick={onBackToLogin}
-                className="text-xs text-[#8B1D3B] font-semibold hover:underline"
+                className="text-xs text-[#7A1631] font-bold hover:underline cursor-pointer"
               >
                 Back to Login
               </button>

@@ -40,49 +40,53 @@ export default function Login({
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFBF5] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-[#E8D5B7] shadow-xl p-6 sm:p-8 space-y-6">
-        <div className="text-center space-y-2">
+    <div className="min-h-screen bg-[#FCF8F2] flex items-center justify-center p-4 selection:bg-[#D4AF37]/30 selection:text-[#5C0F24]">
+      <div className="w-full max-w-md luxury-card p-8 sm:p-10 space-y-6 animate-fade-in-up">
+        <div className="text-center space-y-3">
           <div
             onClick={onBackToLanding}
-            className="inline-flex items-center gap-2 cursor-pointer text-[#8B1D3B] hover:opacity-80 transition-opacity"
+            className="inline-flex items-center gap-3 cursor-pointer group"
           >
-            <span className="text-2xl">💍</span>
-            <span className="font-playfair text-xl font-bold">
-              Shaadi <span className="text-[#D4900A]">Planner</span>
+            <div className="w-10 h-10 rounded-xl bg-[#7A1631] border border-[#D4AF37]/50 flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition-transform">
+              💍
+            </div>
+            <span className="font-cinzel text-xl font-bold text-[#1A1617] tracking-wider">
+              SHAADI <span className="gold-gradient-text">PLANNER</span>
             </span>
           </div>
-          <h2 className="font-playfair text-xl font-bold text-[#8B1D3B]">Welcome Back</h2>
-          <p className="text-xs text-slate-500">Log in to manage your wedding platform</p>
+          <div className="space-y-1 pt-1">
+            <h2 className="font-playfair text-2xl font-bold text-[#7A1631]">Welcome Back</h2>
+            <p className="text-xs text-[#75676B] font-medium">Log in to manage your wedding platform</p>
+          </div>
         </div>
 
         {errorMsg && (
-          <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs p-3 rounded-lg flex items-center gap-2">
-            <span>⚠️</span>
-            <span>{errorMsg}</span>
+          <div className="bg-rose-50 border border-rose-200 text-rose-800 text-xs p-3.5 rounded-xl flex items-start gap-2.5 shadow-sm">
+            <span className="text-base">⚠️</span>
+            <span className="leading-relaxed font-medium">{errorMsg}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs font-medium">
           <div>
-            <label className="block text-slate-700 font-medium mb-1">Email Address</label>
+            <label className="block text-[#1A1617] font-semibold mb-1.5">Email Address *</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
-              className="w-full border border-[#E8D5B7] rounded-lg px-3 py-2.5 bg-[#FFFBF5] focus:outline-none focus:ring-2 focus:ring-[#8B1D3B]/20 focus:border-[#8B1D3B]"
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-3 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] focus:ring-1 focus:ring-[#7A1631] transition-all"
             />
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="text-slate-700 font-medium">Password</label>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-[#1A1617] font-semibold">Password *</label>
               <button
                 type="button"
                 onClick={onNavigateToForgotPassword}
-                className="text-[11px] text-[#8B1D3B] hover:underline"
+                className="text-[11px] text-[#7A1631] hover:underline font-semibold"
               >
                 Forgot password?
               </button>
@@ -93,22 +97,22 @@ export default function Login({
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full border border-[#E8D5B7] rounded-lg px-3 py-2.5 bg-[#FFFBF5] focus:outline-none focus:ring-2 focus:ring-[#8B1D3B]/20 focus:border-[#8B1D3B]"
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-3 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] focus:ring-1 focus:ring-[#7A1631] transition-all"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#8B1D3B] hover:bg-[#6B1530] text-white font-medium py-3 rounded-lg transition-all shadow-md active:scale-95 disabled:opacity-50"
+            className="w-full luxury-button-primary font-semibold py-3.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
           >
             {loading ? "Authenticating..." : "Log In"}
           </button>
         </form>
 
-        <div className="text-center text-xs text-slate-500 pt-2 border-t border-amber-100">
+        <div className="text-center text-xs text-[#75676B] pt-4 border-t border-[#EAE0D5]">
           Don't have a Shaadi Planner account?{" "}
-          <button onClick={onNavigateToRegister} className="text-[#8B1D3B] font-semibold hover:underline">
+          <button onClick={onNavigateToRegister} className="text-[#7A1631] font-bold hover:underline cursor-pointer">
             Register here
           </button>
         </div>

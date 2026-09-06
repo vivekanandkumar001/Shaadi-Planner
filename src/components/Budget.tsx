@@ -75,73 +75,79 @@ export default function Budget({ budget, vendors, onChange }: Props) {
       : []
 
   return (
-    <div className="space-y-6">
-      {/* Summary cards */}
+    <div className="space-y-8 animate-fade-in-up">
+      {/* SUMMARY METRICS CARDS */}
       {totalBudget > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Total Budget", value: formatINR(totalBudget), color: "#2C1810" },
-            { label: "Paid to Vendors", value: formatINR(totalPaid), color: "#8B1D3B" },
-            { label: "Committed", value: formatINR(totalQuoted), color: "#D4900A" },
-            { label: "Remaining", value: formatINR(budgetRemaining), color: budgetRemaining < 0 ? "#DC2626" : "#166534" },
+            { label: "Total Budget", value: formatINR(totalBudget), color: "#1A1617" },
+            { label: "Paid to Vendors", value: formatINR(totalPaid), color: "#7A1631" },
+            { label: "Committed Quotes", value: formatINR(totalQuoted), color: "#D4AF37" },
+            {
+              label: "Remaining Balance",
+              value: formatINR(budgetRemaining),
+              color: budgetRemaining < 0 ? "#EF4444" : "#10B981",
+            },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border border-[#E8D5B7] p-4">
-              <div className="font-playfair text-xl font-bold" style={{ color: s.color }}>
+            <div key={s.label} className="luxury-card p-5 text-left">
+              <div className="font-cinzel text-xl sm:text-2xl font-bold" style={{ color: s.color }}>
                 {s.value}
               </div>
-              <div className="text-xs text-[#9B8B7A] mt-1">{s.label}</div>
+              <div className="text-xs font-semibold text-[#75676B] mt-1 uppercase tracking-wider">{s.label}</div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Calculator form */}
-      <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] p-6">
-        <h2 className="font-playfair text-xl font-bold text-[#8B1D3B] mb-1">
-          बजट कैलकुलेटर
-        </h2>
-        <p className="text-xs text-[#9B8B7A] mb-5">Budget Calculator — category-wise breakdown</p>
+      {/* CALCULATOR CONFIGURATION FORM */}
+      <div className="luxury-card p-6 sm:p-8 space-y-6">
+        <div className="border-b border-[#EAE0D5] pb-4">
+          <h2 className="font-playfair text-2xl font-bold text-[#7A1631]">
+            Budget Calculator & Allocations
+          </h2>
+          <p className="text-xs text-[#75676B] font-medium mt-0.5">Category-wise financial distribution tailored for Indian weddings</p>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-xs font-medium">
           <div className="lg:col-span-2">
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">
-              Event / Couple Name
+            <label className="block text-[#1A1617] font-semibold mb-1.5">
+              Event / Couple Name *
             </label>
             <input
               type="text"
               value={budget.eventName}
               onChange={(e) => onChange({ ...budget, eventName: e.target.value, generated: false })}
-              placeholder="e.g. Priya weds Arjun"
-              className={inp}
+              placeholder="e.g. Aarav weds Ananya"
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] focus:ring-1 focus:ring-[#7A1631] transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">City Tier</label>
+            <label className="block text-[#1A1617] font-semibold mb-1.5">City Tier *</label>
             <select
               value={budget.cityTier}
               onChange={(e) => onChange({ ...budget, cityTier: e.target.value as CityTier, generated: false })}
-              className={inp}
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] focus:ring-1 focus:ring-[#7A1631] transition-all cursor-pointer"
             >
               <option value="metro">Metro — Mumbai, Delhi, Bengaluru</option>
-              <option value="tier2">Tier-2 — Jaipur, Pune, Surat</option>
-              <option value="tier3">Tier-3 — Smaller cities</option>
+              <option value="tier2">Tier-2 — Jaipur, Pune, Udaipur, Surat</option>
+              <option value="tier3">Tier-3 — Regional Cities & Towns</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">
-              Total Guests (मेहमान)
+            <label className="block text-[#1A1617] font-semibold mb-1.5">
+              Total Guests (मेहमान) *
             </label>
             <input
               type="number"
               min="1"
               value={budget.guestCount}
               onChange={(e) => onChange({ ...budget, guestCount: e.target.value, generated: false })}
-              className={inp}
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] focus:ring-1 focus:ring-[#7A1631] transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">
-              Event Days (दिन)
+            <label className="block text-[#1A1617] font-semibold mb-1.5">
+              Event Duration (Days) *
             </label>
             <input
               type="number"
@@ -149,105 +155,103 @@ export default function Budget({ budget, vendors, onChange }: Props) {
               max="10"
               value={budget.eventDays}
               onChange={(e) => onChange({ ...budget, eventDays: e.target.value, generated: false })}
-              className={inp}
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] focus:ring-1 focus:ring-[#7A1631] transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">
-              Total Budget ₹
+            <label className="block text-[#1A1617] font-semibold mb-1.5">
+              Total Estimated Budget (₹) *
             </label>
             <input
               type="number"
               min="0"
               value={budget.totalBudget}
               onChange={(e) => onChange({ ...budget, totalBudget: e.target.value, generated: false })}
-              className={inp}
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] focus:ring-1 focus:ring-[#7A1631] transition-all"
             />
           </div>
         </div>
-        <button
-          onClick={() => onChange({ ...budget, generated: true })}
-          className={btnPrimary + " mt-5"}
-        >
-          बजट बनाएं / Generate Breakdown
-        </button>
+
+        <div className="pt-2">
+          <button
+            onClick={() => onChange({ ...budget, generated: true })}
+            className="luxury-button-primary font-bold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+          >
+            Generate Budget Breakdown ✨
+          </button>
+        </div>
       </div>
 
-      {/* Breakdown table */}
+      {/* BREAKDOWN TABLE */}
       {budget.generated && breakdown.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] overflow-hidden">
-          <div
-            style={{ background: "linear-gradient(135deg, #8B1D3B 0%, #5A1228 100%)" }}
-            className="px-6 py-5 text-white flex items-start justify-between flex-wrap gap-3"
-          >
+        <div className="luxury-card overflow-hidden">
+          <div className="bg-gradient-to-r from-[#1D060D] via-[#3D0A19] to-[#1D060D] px-6 py-6 text-white flex items-center justify-between flex-wrap gap-4 border-b border-[#D4AF37]/30">
             <div>
-              <h3 className="font-playfair text-lg font-bold">
-                {budget.eventName || "Your Wedding"} — Breakdown
+              <h3 className="font-playfair text-xl font-bold">
+                {budget.eventName || "Wedding Celebration"} — Allocation Breakdown
               </h3>
-              <p style={{ color: "#F5C6C6" }} className="text-xs mt-0.5">
-                {guestCount.toLocaleString()} guests ·{" "}
-                {budget.eventDays} days ·{" "}
-                {budget.cityTier === "metro" ? "Metro" : budget.cityTier === "tier2" ? "Tier-2" : "Tier-3"} city
+              <p className="text-xs text-[#E5C358]/80 mt-0.5 font-medium">
+                {guestCount.toLocaleString()} Guests • {budget.eventDays} Days •{" "}
+                {budget.cityTier === "metro" ? "Metro Tier" : budget.cityTier === "tier2" ? "Tier-2 City" : "Tier-3 City"}
               </p>
             </div>
             <div className="text-right">
-              <div className="font-bold text-2xl" style={{ color: "#D4900A" }}>
+              <div className="font-cinzel font-bold text-2xl gold-gradient-text">
                 {formatINR(totalBudget)}
               </div>
-              <div style={{ color: "#F5C6C6" }} className="text-xs">
-                Total Budget
-              </div>
+              <div className="text-[10px] text-[#FCF8F2]/70 uppercase font-semibold">Total Target Budget</div>
             </div>
           </div>
+
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-xs text-left">
               <thead>
-                <tr className="bg-[#FEF0D7] text-[#6B5744] border-b border-[#E8D5B7]">
-                  <th className="text-left px-5 py-3 font-medium">Category</th>
-                  <th className="text-left px-5 py-3 font-medium hidden sm:table-cell">हिंदी</th>
-                  <th className="text-right px-5 py-3 font-medium">Share</th>
-                  <th className="text-right px-5 py-3 font-medium">Amount</th>
-                  <th className="text-right px-5 py-3 font-medium hidden md:table-cell">Per Guest</th>
+                <tr className="bg-[#FCF8F2] text-[#7A1631] border-b border-[#EAE0D5] font-bold uppercase tracking-wider">
+                  <th className="px-6 py-3.5">Category</th>
+                  <th className="px-6 py-3.5 hidden sm:table-cell">Hindi</th>
+                  <th className="px-6 py-3.5 text-right">Share %</th>
+                  <th className="px-6 py-3.5 text-right">Allocated Amount</th>
+                  <th className="px-6 py-3.5 text-right hidden md:table-cell">Per Guest</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#EAE0D5]">
                 {breakdown.map((c, i) => (
                   <tr
                     key={c.name}
-                    className={`border-t border-[#F0E6D3] hover:bg-[#FFFBF5] transition-colors ${i % 2 ? "bg-[#FFFBF5]" : ""}`}
+                    className="hover:bg-[#FCF8F2]/60 transition-colors font-medium text-[#1A1617]"
                   >
-                    <td className="px-5 py-3 font-medium text-[#2C1810]">{c.name}</td>
-                    <td className="px-5 py-3 text-[#9B8B7A] hidden sm:table-cell">{c.hindi}</td>
-                    <td className="px-5 py-3 text-right">
+                    <td className="px-6 py-3.5 font-semibold text-[#7A1631]">{c.name}</td>
+                    <td className="px-6 py-3.5 text-[#75676B] hidden sm:table-cell">{c.hindi}</td>
+                    <td className="px-6 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 bg-[#F0E6D3] rounded-full h-1.5 hidden sm:block">
+                        <div className="w-16 bg-[#EAE0D5] rounded-full h-1.5 hidden sm:block overflow-hidden">
                           <div
-                            className="bg-[#D4900A] h-1.5 rounded-full"
+                            className="bg-[#D4AF37] h-1.5 rounded-full"
                             style={{ width: `${(c.pct / 36) * 100}%` }}
                           />
                         </div>
-                        <span className="text-[#6B5744] w-8 text-right">{c.pct}%</span>
+                        <span className="text-[#1A1617] font-semibold">{c.pct}%</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-right font-semibold text-[#8B1D3B] font-mono">
+                    <td className="px-6 py-3.5 text-right font-bold text-[#7A1631]">
                       {formatINR(c.amount)}
                     </td>
-                    <td className="px-5 py-3 text-right text-[#9B8B7A] hidden md:table-cell font-mono text-xs">
+                    <td className="px-6 py-3.5 text-right text-[#75676B] hidden md:table-cell">
                       {formatINR(c.perGuest)}
                     </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t-2 border-[#D4900A] bg-[#FEF0D7]">
-                  <td className="px-5 py-3 font-bold text-[#2C1810]" colSpan={2}>
-                    Total
+                <tr className="border-t-2 border-[#D4AF37] bg-[#FCF8F2] font-bold text-[#1A1617]">
+                  <td className="px-6 py-4 font-playfair text-sm" colSpan={2}>
+                    Total Allocation
                   </td>
-                  <td className="px-5 py-3 text-right font-bold text-[#6B5744]">100%</td>
-                  <td className="px-5 py-3 text-right font-bold text-[#8B1D3B] font-mono">
+                  <td className="px-6 py-4 text-right text-[#7A1631]">100%</td>
+                  <td className="px-6 py-4 text-right font-cinzel text-sm text-[#7A1631]">
                     {formatINR(totalBudget)}
                   </td>
-                  <td className="px-5 py-3 text-right text-[#9B8B7A] hidden md:table-cell font-mono text-xs">
+                  <td className="px-6 py-4 text-right text-[#75676B] hidden md:table-cell">
                     {formatINR(totalBudget / guestCount)}
                   </td>
                 </tr>

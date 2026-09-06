@@ -28,38 +28,38 @@ export default function ShareModal({ weddingId, onClose }: ShareModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl border border-[#E8D5B7] shadow-2xl max-w-md w-full p-6 space-y-4">
-        <div className="flex items-center justify-between border-b pb-3">
-          <div className="flex items-center gap-2">
+    <div className="fixed inset-0 z-50 bg-[#1D060D]/70 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="luxury-card max-w-md w-full p-6 sm:p-8 space-y-5 animate-fade-in-up">
+        <div className="flex items-center justify-between border-b border-[#EAE0D5] pb-3">
+          <div className="flex items-center gap-2.5">
             <span className="text-xl">🔗</span>
-            <h3 className="font-playfair text-base font-bold text-[#8B1D3B]">Share Wedding Overview</h3>
+            <h3 className="font-playfair text-lg font-bold text-[#7A1631]">Share Wedding Itinerary</h3>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">✕</button>
+          <button onClick={onClose} className="text-[#75676B] hover:text-[#1A1617] font-bold text-sm cursor-pointer">✕</button>
         </div>
 
-        <p className="text-xs text-slate-600 leading-relaxed">
-          Generate a safe, random share token link. Anyone with this link can view your wedding timeline, venue, and menu options without accessing private financial notes or guest passwords.
+        <p className="text-xs text-[#75676B] leading-relaxed font-medium">
+          Generate a secure, read-only share link. Family members and guests with this link can view ceremony timelines, venues, dress codes, and menus without accessing private financial notes or budgets.
         </p>
 
         {shareUrl ? (
           <div className="space-y-3 pt-2">
-            <div className="flex items-center gap-2 bg-[#FFFBF5] border border-[#E8D5B7] p-2.5 rounded-lg text-xs font-mono text-slate-700 break-all">
-              <span className="flex-1 truncate">{shareUrl}</span>
+            <div className="flex items-center gap-2 bg-[#FCF8F2] border border-[#EAE0D5] p-3 rounded-xl text-xs text-[#1A1617] break-all">
+              <span className="flex-1 truncate font-mono">{shareUrl}</span>
               <button
                 onClick={copyToClipboard}
-                className="bg-[#8B1D3B] text-white px-3 py-1.5 rounded font-sans text-xs font-medium"
+                className="luxury-button-primary px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap cursor-pointer"
               >
                 {copied ? "Copied! ✓" : "Copy Link"}
               </button>
             </div>
-            <p className="text-[10px] text-slate-400">Link valid for 30 days. You can revoke it anytime.</p>
+            <p className="text-[11px] text-[#75676B]">Share link active for read-only guest access.</p>
           </div>
         ) : (
           <button
             onClick={handleGenerate}
             disabled={loading}
-            className="w-full bg-[#8B1D3B] hover:bg-[#6B1530] text-white py-3 rounded-lg text-xs font-medium shadow-md active:scale-95 disabled:opacity-50"
+            className="w-full luxury-button-primary font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
           >
             {loading ? "Generating Secure Token..." : "Generate Share Link ✨"}
           </button>

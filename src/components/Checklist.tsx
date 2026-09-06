@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { ChecklistItem, ChecklistCategory, ChecklistPriority } from "../types"
-import { inp, btnPrimary } from "../utils"
 import { tasksApi } from "../api"
 
 interface Props {
@@ -10,15 +9,9 @@ interface Props {
 }
 
 const CAT_LABELS: Record<ChecklistCategory, string> = {
-  venue: "🏛️ Venue", catering: "🍽️ Catering", outfits: "👗 Outfits",
-  decor: "🌸 Decor", invites: "💌 Invitations", beauty: "💄 Beauty",
-  legal: "📜 Legal", honeymoon: "✈️ Honeymoon", other: "✦ Other",
-}
-
-const PRIORITY_STYLE: Record<ChecklistPriority, { bg: string; text: string }> = {
-  high: { bg: "#FEF2F2", text: "#B91C1C" },
-  medium: { bg: "#FEF0D7", text: "#92400E" },
-  low: { bg: "#F0F9FF", text: "#0369A1" },
+  venue: "🏛️ Venue & Location", catering: "🍽️ Catering & Food", outfits: "👗 Outfits & Attire",
+  decor: "🌸 Decor & Flowers", invites: "💌 Invitations & Cards", beauty: "💄 Beauty & Makeup",
+  legal: "📜 Marriage Registration", honeymoon: "✈️ Honeymoon & Travel", other: "✦ Other Checklist",
 }
 
 const blank: Omit<ChecklistItem, "id"> = {
@@ -64,8 +57,6 @@ export default function Checklist({ items, onChange, weddingId }: Props) {
     onChange(items.filter((i) => i.id !== id))
   }
 
-  const usedCats = Array.from(new Set(items.map((i) => i.category)))
-
   const filtered = items
     .filter((i) => (catFilter === "all" || i.category === catFilter))
     .filter((i) => showDone || !i.done)
@@ -76,142 +67,184 @@ export default function Checklist({ items, onChange, weddingId }: Props) {
     })
 
   return (
-    <div className="space-y-6">
-      {/* Progress */}
-      <div className="bg-white rounded-2xl border border-[#E8D5B7] p-5 shadow-sm">
-        <div className="flex items-center justify-between mb-2">
+    <div className="space-y-8 animate-fade-in-up">
+      {/* OVERALL PROGRESS */}
+      <div className="luxury-card p-6 sm:p-8 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <span className="font-playfair text-2xl font-bold text-[#8B1D3B]">{done}</span>
-            <span className="text-[#9B8B7A] text-sm"> / {items.length} tasks complete</span>
+            <h2 className="font-playfair text-2xl font-bold text-[#7A1631]">Wedding Planning Checklist</h2>
+            <p className="text-xs text-[#75676B] font-medium mt-0.5">Categorized timeline and priority tracking for essential ceremonies</p>
           </div>
-          <span className="font-mono font-bold text-[#D4900A]">{pct}%</span>
+          <div className="text-right">
+            <span className="font-cinzel text-3xl font-extrabold gold-gradient-text">{pct}%</span>
+            <div className="text-xs text-[#75676B] font-semibold">{done} of {items.length} Completed</div>
+          </div>
         </div>
-        <div className="w-full bg-[#F0E6D3] rounded-full h-2.5">
+
+        <div className="w-full bg-[#EAE0D5] rounded-full h-2.5 overflow-hidden">
           <div
-            className="bg-[#8B1D3B] h-2.5 rounded-full transition-all"
+            className="bg-gradient-to-r from-[#7A1631] via-[#D4AF37] to-[#10B981] h-2.5 rounded-full transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
-        <div className="mt-3 flex flex-wrap gap-3">
-          {Object.entries(CAT_LABELS).map(([key, label]) => {
-            const catItems = items.filter((i) => i.category === key)
-            if (catItems.length === 0) return null
-            const catDone = catItems.filter((i) => i.done).length
-            return (
-              <div key={key} className="text-xs text-[#6B5744]">
-                <span>{label}</span>
-                <span className="ml-1 font-semibold text-[#8B1D3B]">{catDone}/{catItems.length}</span>
-              </div>
-            )
-          })}
-        </div>
       </div>
 
-      {/* Add task */}
-      <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] p-5">
-        <h2 className="font-playfair text-xl font-bold text-[#8B1D3B] mb-4">
-          कार्य जोड़ें / Add Task
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="col-span-2">
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Task *</label>
+      {/* ADD TASK FORM */}
+      <div className="luxury-card p-6 sm:p-8 space-y-6">
+        <div className="border-b border-[#EAE0D5] pb-3">
+          <h3 className="font-playfair text-lg font-bold text-[#7A1631]">Add New Checklist Task</h3>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-medium">
+          <div className="lg:col-span-2">
+            <label className="block text-[#1A1617] font-semibold mb-1.5">Task Description *</label>
             <input
               type="text"
               value={form.task}
-              onChange={(e) => setForm((p) => ({ ...p, task: e.target.value }))}
-              onKeyDown={(e) => e.key === "Enter" && add()}
-              placeholder="What needs to be done?"
-              className={inp}
+              onChange={(e) => setForm({ ...form, task: e.target.value })}
+              placeholder="e.g. Finalize bridal makeup artist booking"
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631]"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Category</label>
-            <select value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value as ChecklistCategory }))} className={inp}>
-              {Object.entries(CAT_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            <label className="block text-[#1A1617] font-semibold mb-1.5">Category *</label>
+            <select
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value as ChecklistCategory })}
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] cursor-pointer"
+            >
+              {Object.entries(CAT_LABELS).map(([k, v]) => (
+                <option key={k} value={k}>
+                  {v}
+                </option>
+              ))}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Priority</label>
-            <select value={form.priority} onChange={(e) => setForm((p) => ({ ...p, priority: e.target.value as ChecklistPriority }))} className={inp}>
-              <option value="high">🔴 High</option>
-              <option value="medium">🟡 Medium</option>
-              <option value="low">🔵 Low</option>
+            <label className="block text-[#1A1617] font-semibold mb-1.5">Priority *</label>
+            <select
+              value={form.priority}
+              onChange={(e) => setForm({ ...form, priority: e.target.value as ChecklistPriority })}
+              className="w-full border border-[#EAE0D5] rounded-xl px-4 py-2.5 bg-[#FCF8F2] text-[#1A1617] focus:outline-none focus:border-[#7A1631] cursor-pointer"
+            >
+              <option value="high">High Priority 🔴</option>
+              <option value="medium">Medium Priority 🟡</option>
+              <option value="low">Low Priority 🟢</option>
             </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-[#6B5744] mb-1">Due Date</label>
-            <input type="date" value={form.dueDate} onChange={(e) => setForm((p) => ({ ...p, dueDate: e.target.value }))} className={inp} />
           </div>
         </div>
-        <button onClick={add} disabled={!form.task.trim() || loading} className={btnPrimary + " mt-4"}>
-          {loading ? "Adding..." : "+ Add Task"}
-        </button>
+
+        <div>
+          <button
+            onClick={add}
+            disabled={loading}
+            className="luxury-button-primary font-bold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+          >
+            {loading ? "Adding..." : "+ Add Task to Checklist"}
+          </button>
+        </div>
       </div>
 
-      {/* Filters */}
-      {items.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          <button onClick={() => setCatFilter("all")} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${catFilter === "all" ? "bg-[#8B1D3B] text-white" : "bg-[#F0E6D3] text-[#6B5744] hover:bg-[#E8D5B7]"}`}>All</button>
-          {usedCats.map((c) => (
-            <button key={c} onClick={() => setCatFilter(c)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${catFilter === c ? "bg-[#8B1D3B] text-white" : "bg-[#F0E6D3] text-[#6B5744] hover:bg-[#E8D5B7]"}`}>
-              {CAT_LABELS[c]}
+      {/* FILTER CONTROLS & TASK LIST */}
+      <div className="luxury-card overflow-hidden">
+        <div className="p-6 bg-[#FCF8F2]/60 border-b border-[#EAE0D5] flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2 overflow-x-auto">
+            <button
+              onClick={() => setCatFilter("all")}
+              className={`text-xs font-semibold px-3.5 py-1.5 rounded-lg border transition-all cursor-pointer uppercase ${
+                catFilter === "all"
+                  ? "bg-[#7A1631] text-white border-[#7A1631]"
+                  : "bg-white text-[#75676B] border-[#EAE0D5]"
+              }`}
+            >
+              All Categories
             </button>
-          ))}
-          <label className="flex items-center gap-1.5 ml-auto text-xs text-[#6B5744] cursor-pointer">
-            <input type="checkbox" checked={showDone} onChange={(e) => setShowDone(e.target.checked)} className="accent-[#8B1D3B]" />
-            Show completed
+            {Object.entries(CAT_LABELS).map(([k, v]) => {
+              const count = items.filter((i) => i.category === k).length
+              if (count === 0) return null
+              return (
+                <button
+                  key={k}
+                  onClick={() => setCatFilter(k as ChecklistCategory)}
+                  className={`text-xs font-semibold px-3.5 py-1.5 rounded-lg border transition-all cursor-pointer uppercase ${
+                    catFilter === k
+                      ? "bg-[#7A1631] text-white border-[#7A1631]"
+                      : "bg-white text-[#75676B] border-[#EAE0D5]"
+                  }`}
+                >
+                  {v} ({count})
+                </button>
+              )
+            })}
+          </div>
+
+          <label className="flex items-center gap-2 text-xs font-semibold text-[#1A1617] cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showDone}
+              onChange={(e) => setShowDone(e.target.checked)}
+              className="rounded text-[#7A1631] focus:ring-[#7A1631]"
+            />
+            <span>Show Completed Tasks</span>
           </label>
         </div>
-      )}
 
-      {/* List */}
-      {filtered.length > 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B7] divide-y divide-[#F0E6D3] overflow-hidden">
-          {filtered.map((item) => {
-            const ps = PRIORITY_STYLE[item.priority] || PRIORITY_STYLE.medium
-            return (
+        {filtered.length > 0 ? (
+          <div className="divide-y divide-[#EAE0D5]">
+            {filtered.map((item) => (
               <div
                 key={item.id}
-                className={`flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-[#FFFBF5] ${item.done ? "opacity-50" : ""}`}
+                className={`px-6 py-4 flex items-center justify-between gap-4 transition-colors ${
+                  item.done ? "bg-[#FCF8F2]/30 opacity-60" : "hover:bg-[#FCF8F2]/60"
+                }`}
               >
-                <input
-                  type="checkbox"
-                  checked={item.done}
-                  onChange={() => toggle(item.id)}
-                  className="w-4 h-4 rounded accent-[#8B1D3B] flex-shrink-0 cursor-pointer"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className={`text-sm font-medium text-[#2C1810] ${item.done ? "line-through" : ""}`}>
-                    {item.task}
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[10px] text-[#9B8B7A]">{CAT_LABELS[item.category]}</span>
-                    {item.dueDate && (
-                      <span className="text-[10px] text-[#9B8B7A]">
-                        · Due {new Date(item.dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                      </span>
-                    )}
+                <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                  <input
+                    type="checkbox"
+                    checked={item.done}
+                    onChange={() => toggle(item.id)}
+                    className="w-5 h-5 rounded text-[#7A1631] focus:ring-[#7A1631] cursor-pointer"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className={`text-xs font-semibold ${item.done ? "line-through text-[#75676B]" : "text-[#1A1617]"}`}>
+                      {item.task}
+                    </div>
+                    <div className="text-[10px] text-[#75676B] uppercase font-bold tracking-wider mt-0.5">
+                      {CAT_LABELS[item.category]}
+                    </div>
                   </div>
                 </div>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0" style={{ background: ps.bg, color: ps.text }}>
-                  {item.priority}
-                </span>
-                <button onClick={() => remove(item.id)} className="text-[#C4A882] hover:text-red-500 transition-colors text-xl leading-none flex-shrink-0">×</button>
+
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
+                      item.priority === "high"
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
+                        : item.priority === "medium"
+                        ? "bg-amber-50 text-amber-700 border border-amber-200"
+                        : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                    }`}
+                  >
+                    {item.priority}
+                  </span>
+                  <button
+                    onClick={() => remove(item.id)}
+                    className="text-rose-600 hover:text-rose-900 font-bold text-xs cursor-pointer px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
-            )
-          })}
-        </div>
-      ) : items.length > 0 ? (
-        <div className="text-center py-12 text-[#C4A882]">
-          <p className="text-sm">{showDone ? "No tasks in this category" : "All tasks complete! 🎉"}</p>
-        </div>
-      ) : (
-        <div className="text-center py-20 text-[#C4A882]">
-          <div className="text-6xl mb-4">✅</div>
-          <p className="text-sm font-medium">No tasks added yet.</p>
-          <p className="text-xs mt-1">Add your wedding to-do items above.</p>
-        </div>
-      )}
+            ))}
+          </div>
+        ) : (
+          <div className="p-12 text-center text-[#75676B] space-y-3">
+            <div className="text-4xl">✅</div>
+            <p className="text-sm font-semibold">No checklist items match the current filters.</p>
+            <p className="text-xs">Add your wedding tasks above to start checking off items.</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

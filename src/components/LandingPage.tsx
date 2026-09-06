@@ -18,65 +18,68 @@ export default function LandingPage({ onNavigateToAuth, onNavigateToLegal }: Lan
   }
 
   const SERVICES = [
-    { icon: "🏠", title: "Smart Dashboard", desc: "Real-time countdown, budget utilization, guest RSVP tracking, and upcoming task alerts." },
-    { icon: "💰", title: "Budget Planner", desc: "Category-wise expense allocations, estimated vs actual spend, and payment due dates." },
-    { icon: "👥", title: "Guest List Manager", desc: "Track RSVP statuses, side (Bride/Groom), dietary preferences, and plus-ones." },
-    { icon: "🪑", title: "Seating Planner", desc: "Design table capacities and assign guests seamlessly without duplicates." },
-    { icon: "🤝", title: "Vendor Directory", desc: "Shortlist, book, and track payments for caterers, photographers, decorators, and DJs." },
-    { icon: "📅", title: "Event Timeline", desc: "Schedule Haldi, Mehendi, Sangeet, Baraat, Vivah, and Reception details with dresscodes." },
-    { icon: "✅", title: "Smart Checklist", desc: "Pre-loaded with 20+ essential Indian wedding tasks categorized by priority." },
-    { icon: "🎁", title: "Shagun & Gift Tracker", desc: "Record cash gifts and returns per event with full financial privacy." },
+    { icon: "🏠", title: "Smart Dashboard", desc: "Real-time countdown, budget utilization, guest RSVP metrics, and upcoming function alerts." },
+    { icon: "💰", title: "Budget Planner", desc: "Category-wise expense allocation, estimated vs actual spend, and vendor payment milestones." },
+    { icon: "👥", title: "Guest List Manager", desc: "Track RSVPs, Bride/Groom sides, dietary preferences, and plus-ones seamlessly." },
+    { icon: "🪑", title: "Seating Planner", desc: "Design table capacities and assign guests without seat overlap or double bookings." },
+    { icon: "🤝", title: "Vendor Directory", desc: "Shortlist, hire, and track payments for caterers, venue, decorators, and photographers." },
+    { icon: "📅", title: "Event Timeline", desc: "Schedule Haldi, Mehendi, Sangeet, Baraat, Vivah, and Reception with dresscodes & venues." },
+    { icon: "✅", title: "Smart Checklist", desc: "Pre-loaded with essential Indian wedding tasks categorized by priority and timeframe." },
+    { icon: "🎁", title: "Shagun & Gift Tracker", desc: "Private financial ledger for recording cash gifts and returns per wedding function." },
     { icon: "🍽️", title: "Menu Builder", desc: "Organize appetizers, live counters, main courses, and desserts with dietary tags." },
-    { icon: "📝", title: "Wedding Notes", desc: "Keep venue contacts, song lists, and family reminders in one place." },
+    { icon: "📝", title: "Wedding Notes", desc: "Keep venue contacts, song playlists, and family reminders organized in one hub." },
   ]
 
   const FAQS = [
-    { q: "Is Shaadi Planner free to use?", a: "Yes! Shaadi Planner offers a comprehensive free plan with access to all 10 wedding planning modules." },
-    { q: "Can I access my wedding plan from my mobile phone?", a: "Absolutly. Shaadi Planner is fully responsive and accessible on iOS, Android, tablets, and desktop browsers." },
-    { q: "Is my wedding data safely saved in the cloud?", a: "Yes. All your budget details, guest lists, and notes are securely stored in PostgreSQL with HttpOnly encrypted authentication." },
-    { q: "Can I manage multiple wedding functions like Mehendi & Sangeet?", a: "Yes! You can customize timelines, venues, dresscodes, and budgets for Haldi, Mehendi, Sangeet, Vivah, Reception, and custom events." },
-    { q: "Can I export my guest list or budget to CSV?", a: "Yes. You can export your guest list, vendor records, budget summary, and function schedules to CSV at any time." },
-    { q: "How do I migrate my existing plan if I used Shaadi Planner before?", a: "Shaadi Planner automatically detects any locally saved browser data upon login and imports it to your cloud account seamlessly." },
+    { q: "Is Shaadi Planner free to use?", a: "Yes! Shaadi Planner offers a comprehensive free plan with access to all 10 core wedding planning modules." },
+    { q: "Can I access my wedding plan from my mobile phone?", a: "Absolutely. Shaadi Planner is fully responsive and accessible across iOS, Android, tablets, and desktop browsers." },
+    { q: "Is my wedding data safely stored in the cloud?", a: "Yes. All your budget calculations, guest lists, and notes are securely stored in PostgreSQL with encrypted session auth." },
+    { q: "Can I manage multiple wedding functions like Mehendi & Sangeet?", a: "Yes! You can customize timelines, venues, dresscodes, and budgets for Haldi, Mehendi, Sangeet, Vivah, Reception, and custom ceremonies." },
+    { q: "Can I export my guest list or budget to CSV?", a: "Yes. You can export guest lists, vendor balances, budget summaries, and function schedules to CSV at any time." },
+    { q: "How do I migrate my existing local data?", a: "Shaadi Planner automatically detects any locally saved browser data upon login and seamlessly imports it to your cloud account." },
   ]
 
   return (
-    <div className="min-h-screen bg-[#FFFBF5] text-[#2C1810] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#FCF8F2] text-[#1A1617] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#5C0F24]">
       {/* NAVBAR */}
-      <header className="sticky top-0 z-50 bg-[#3A0C1A] text-white border-b border-amber-900/30 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <div className="w-9 h-9 rounded-full bg-[#8B1D3B] border border-amber-400/40 flex items-center justify-center text-lg">
+      <header className="sticky top-0 z-50 bg-[#1D060D]/90 backdrop-blur-md border-b border-[#D4AF37]/25 shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <div
+            className="flex items-center gap-3.5 cursor-pointer group"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7A1631] to-[#400A19] border border-[#D4AF37]/50 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition-transform">
               💍
             </div>
             <div>
-              <span className="font-playfair text-xl font-bold tracking-wide">
-                Shaadi <span className="text-[#D4900A]">Planner</span>
+              <span className="font-cinzel text-xl sm:text-2xl font-bold tracking-wider text-white">
+                SHAADI <span className="gold-gradient-text">PLANNER</span>
               </span>
-              <span className="block text-[9px] text-amber-200/70 font-light -mt-1 tracking-widest uppercase">
-                Premium Indian Wedding Platform
+              <span className="block text-[9px] text-[#E5C358]/80 font-medium tracking-[0.2em] uppercase -mt-0.5">
+                Royal Indian Wedding SaaS
               </span>
             </div>
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-amber-100/90">
-            <button onClick={() => scrollToSection("services")} className="hover:text-[#D4900A] transition-colors">Services</button>
-            <button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#D4900A] transition-colors">How It Works</button>
-            <button onClick={() => scrollToSection("comparison")} className="hover:text-[#D4900A] transition-colors">Why Shaadi Planner</button>
-            <button onClick={() => scrollToSection("faq")} className="hover:text-[#D4900A] transition-colors">FAQ</button>
+          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold tracking-wider text-[#FCF8F2]/80 uppercase">
+            <button onClick={() => scrollToSection("services")} className="hover:text-[#E5C358] transition-colors cursor-pointer">Modules</button>
+            <button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#E5C358] transition-colors cursor-pointer">Workflow</button>
+            <button onClick={() => scrollToSection("comparison")} className="hover:text-[#E5C358] transition-colors cursor-pointer">Why Us</button>
+            <button onClick={() => scrollToSection("faq")} className="hover:text-[#E5C358] transition-colors cursor-pointer">FAQ</button>
           </nav>
 
           {/* Auth Actions */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-4">
             <button
               onClick={() => onNavigateToAuth("login")}
-              className="text-xs font-medium px-4 py-2 text-amber-100 hover:text-white transition-colors"
+              className="text-xs font-semibold tracking-wider uppercase px-4 py-2 text-[#FCF8F2] hover:text-[#E5C358] transition-colors cursor-pointer"
             >
               Log In
             </button>
             <button
               onClick={() => onNavigateToAuth("register")}
-              className="bg-[#D4900A] hover:bg-amber-600 text-slate-950 font-semibold px-4 py-2 rounded-lg text-xs transition-all shadow-md active:scale-95"
+              className="luxury-button-gold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider font-bold cursor-pointer"
             >
               Get Started Free
             </button>
@@ -85,7 +88,8 @@ export default function LandingPage({ onNavigateToAuth, onNavigateToLegal }: Lan
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-amber-200 text-2xl focus:outline-none"
+            className="md:hidden text-[#E5C358] text-2xl focus:outline-none cursor-pointer"
+            aria-label="Toggle menu"
           >
             {mobileMenuOpen ? "✕" : "☰"}
           </button>
@@ -93,21 +97,21 @@ export default function LandingPage({ onNavigateToAuth, onNavigateToLegal }: Lan
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#2C0914] px-4 py-4 space-y-3 border-t border-amber-900/40 text-xs">
-            <button onClick={() => scrollToSection("services")} className="block w-full text-left py-1.5 text-amber-100">Services</button>
-            <button onClick={() => scrollToSection("how-it-works")} className="block w-full text-left py-1.5 text-amber-100">How It Works</button>
-            <button onClick={() => scrollToSection("comparison")} className="block w-full text-left py-1.5 text-amber-100">Why Shaadi Planner</button>
-            <button onClick={() => scrollToSection("faq")} className="block w-full text-left py-1.5 text-amber-100">FAQ</button>
-            <div className="pt-2 border-t border-amber-900/40 flex flex-col gap-2">
+          <div className="md:hidden bg-[#1D060D] px-6 py-6 space-y-4 border-t border-[#D4AF37]/20 text-xs font-medium uppercase tracking-wider text-[#FCF8F2]">
+            <button onClick={() => scrollToSection("services")} className="block w-full text-left py-2 hover:text-[#E5C358]">Modules</button>
+            <button onClick={() => scrollToSection("how-it-works")} className="block w-full text-left py-2 hover:text-[#E5C358]">Workflow</button>
+            <button onClick={() => scrollToSection("comparison")} className="block w-full text-left py-2 hover:text-[#E5C358]">Why Us</button>
+            <button onClick={() => scrollToSection("faq")} className="block w-full text-left py-2 hover:text-[#E5C358]">FAQ</button>
+            <div className="pt-4 border-t border-[#D4AF37]/20 flex flex-col gap-3">
               <button
                 onClick={() => onNavigateToAuth("login")}
-                className="w-full text-center py-2 rounded border border-amber-500/30 text-amber-100"
+                className="w-full text-center py-2.5 rounded-xl border border-[#D4AF37]/40 text-[#FCF8F2]"
               >
                 Log In
               </button>
               <button
                 onClick={() => onNavigateToAuth("register")}
-                className="w-full text-center py-2 bg-[#D4900A] text-slate-950 font-bold rounded"
+                className="w-full text-center py-2.5 luxury-button-gold rounded-xl font-bold text-slate-950"
               >
                 Get Started Free
               </button>
@@ -117,70 +121,106 @@ export default function LandingPage({ onNavigateToAuth, onNavigateToLegal }: Lan
       </header>
 
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#3A0C1A] via-[#501124] to-[#FFFBF5] text-white pt-16 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto text-center relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-400/30 px-3.5 py-1.5 rounded-full text-amber-300 text-xs font-medium backdrop-blur-sm">
-            ✨ Complete Indian Wedding Planning SaaS
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#1D060D] via-[#3D0A19] to-[#FCF8F2] text-white pt-16 pb-24 px-4 sm:px-6 lg:px-8">
+        {/* Subtle Decorative Pattern Layer */}
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+          {/* LEFT COLUMN: Messaging & Action */}
+          <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2.5 bg-[#5C0F24]/60 border border-[#D4AF37]/40 px-4 py-1.5 rounded-full text-[#E5C358] text-xs font-semibold tracking-wider uppercase backdrop-blur-md shadow-inner">
+              <span>👑</span>
+              <span>The Royal Indian Wedding SaaS</span>
+            </div>
+
+            <h1 className="font-playfair text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.15]">
+              Plan Your Perfect Shaadi. <br />
+              <span className="gold-gradient-text font-cinzel">Without the Chaos.</span>
+            </h1>
+
+            <p className="text-base sm:text-lg text-[#FCF8F2]/80 font-normal leading-relaxed max-w-xl mx-auto lg:mx-0">
+              Unify your budget, guest RSVPs, vendor bookings, seating arrangements, function timelines, menu courses, and gift tracking into one luxury cloud platform.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              <button
+                onClick={() => onNavigateToAuth("register")}
+                className="w-full sm:w-auto luxury-button-gold px-8 py-4 rounded-xl text-sm font-bold tracking-wider uppercase cursor-pointer"
+              >
+                Start Planning Free 🎉
+              </button>
+              <button
+                onClick={() => scrollToSection("services")}
+                className="w-full sm:w-auto bg-[#5C0F24]/50 hover:bg-[#5C0F24]/80 text-[#FCF8F2] font-semibold px-7 py-4 rounded-xl text-sm border border-[#D4AF37]/30 transition-all backdrop-blur-md cursor-pointer"
+              >
+                Explore All 10 Modules
+              </button>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="pt-6 border-t border-[#D4AF37]/20 grid grid-cols-3 gap-4 text-center lg:text-left max-w-md mx-auto lg:mx-0">
+              <div>
+                <div className="text-xs font-bold text-[#E5C358]">10 Modules</div>
+                <div className="text-[11px] text-[#FCF8F2]/60">Complete Wedding Suite</div>
+              </div>
+              <div>
+                <div className="text-xs font-bold text-[#E5C358]">PostgreSQL</div>
+                <div className="text-[11px] text-[#FCF8F2]/60">Encrypted Cloud Storage</div>
+              </div>
+              <div>
+                <div className="text-xs font-bold text-[#E5C358]">100% Free</div>
+                <div className="text-[11px] text-[#FCF8F2]/60">Full Access Included</div>
+              </div>
+            </div>
           </div>
 
-          <h1 className="font-playfair text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
-            Plan Your Perfect Shaadi. <br />
-            <span className="text-[#D4900A]">Without the Chaos.</span>
-          </h1>
+          {/* RIGHT COLUMN: Royal Wedding Visual + Floating Preview Card */}
+          <div className="lg:col-span-6 relative">
+            <div className="relative mx-auto max-w-lg lg:max-w-none">
+              {/* Main Cinematic Image Container */}
+              <div className="relative rounded-3xl overflow-hidden border-2 border-[#D4AF37]/40 shadow-2xl group">
+                <img
+                  src="/images/royal_wedding_hero.jpg"
+                  alt="Luxury Royal Indian Wedding Ceremony Mandap Venue"
+                  className="w-full h-[380px] sm:h-[460px] object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1D060D] via-[#1D060D]/20 to-transparent" />
+              </div>
 
-          <p className="max-w-2xl mx-auto text-sm sm:text-base text-amber-100/80 font-light leading-relaxed">
-            Bring budget, guest RSVPs, vendor bookings, seating arrangements, function timelines, menu courses, and gift tracking into one elegant cloud platform.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-            <button
-              onClick={() => onNavigateToAuth("register")}
-              className="w-full sm:w-auto bg-[#8B1D3B] hover:bg-[#6B1530] text-white font-semibold px-8 py-3.5 rounded-xl text-sm shadow-xl hover:shadow-2xl transition-all border border-amber-400/30 active:scale-95"
-            >
-              Start Planning Free 🎉
-            </button>
-            <button
-              onClick={() => scrollToSection("services")}
-              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white font-medium px-6 py-3.5 rounded-xl text-sm border border-white/20 transition-all backdrop-blur-sm"
-            >
-              Explore All 10 Services
-            </button>
-          </div>
-
-          {/* DASHBOARD PREVIEW CARD MOCKUP */}
-          <div className="pt-10 max-w-4xl mx-auto">
-            <div className="bg-[#2C0914]/90 p-3 rounded-2xl border border-amber-500/30 shadow-2xl backdrop-blur-md">
-              <div className="bg-white rounded-xl p-4 sm:p-6 text-left text-slate-800 shadow-inner">
-                <div className="flex flex-wrap items-center justify-between border-b pb-3 gap-2">
+              {/* FLOATING DEMO DASHBOARD CARD OVERLAY */}
+              <div className="absolute -bottom-8 left-4 right-4 sm:left-6 sm:right-6 bg-[#1D060D]/95 border border-[#D4AF37]/40 p-4 sm:p-5 rounded-2xl shadow-2xl backdrop-blur-xl animate-float-slow">
+                <div className="flex items-center justify-between border-b border-[#D4AF37]/20 pb-3 mb-3">
                   <div>
-                    <h3 className="font-playfair text-lg font-bold text-[#8B1D3B]">Aarav & Ananya's Wedding Dashboard</h3>
-                    <p className="text-xs text-slate-500">December 15, 2026 • New Delhi</p>
+                    <h3 className="font-playfair text-sm sm:text-base font-bold text-white">
+                      Aarav & Ananya's Wedding Command Center
+                    </h3>
+                    <p className="text-[11px] text-[#E5C358]/80">December 15, 2026 • Udaipur Palace</p>
                   </div>
-                  <span className="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-semibold border border-amber-300">
-                    ⏳ 101 Days Remaining
+                  <span className="bg-[#7A1631] text-[#E5C358] border border-[#D4AF37]/30 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg shadow-sm">
+                    ⏳ 101 Days Left
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-                  <div className="bg-[#FDF6EC] p-3 rounded-lg border border-[#E8D5B7]">
-                    <div className="text-[10px] text-slate-500 font-medium">TOTAL BUDGET</div>
-                    <div className="text-sm font-bold text-[#8B1D3B]">₹25,00,000</div>
-                    <div className="text-[10px] text-emerald-600 mt-1">₹18,50,000 spent</div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-left">
+                  <div className="bg-[#2D0B16] p-2.5 rounded-xl border border-[#D4AF37]/20">
+                    <div className="text-[9px] uppercase font-semibold tracking-wider text-[#FCF8F2]/60">Total Budget</div>
+                    <div className="text-xs font-bold text-[#E5C358] mt-0.5">₹25,00,000</div>
+                    <div className="text-[9px] text-emerald-400 mt-0.5">₹18,50,000 Spent</div>
                   </div>
-                  <div className="bg-[#FDF6EC] p-3 rounded-lg border border-[#E8D5B7]">
-                    <div className="text-[10px] text-slate-500 font-medium">GUEST RSVPs</div>
-                    <div className="text-sm font-bold text-[#8B1D3B]">240 / 300</div>
-                    <div className="text-[10px] text-amber-700 mt-1">80% Confirmed</div>
+                  <div className="bg-[#2D0B16] p-2.5 rounded-xl border border-[#D4AF37]/20">
+                    <div className="text-[9px] uppercase font-semibold tracking-wider text-[#FCF8F2]/60">Guest RSVPs</div>
+                    <div className="text-xs font-bold text-[#E5C358] mt-0.5">240 / 300</div>
+                    <div className="text-[9px] text-emerald-400 mt-0.5">80% Confirmed</div>
                   </div>
-                  <div className="bg-[#FDF6EC] p-3 rounded-lg border border-[#E8D5B7]">
-                    <div className="text-[10px] text-slate-500 font-medium">VENDORS BOOKED</div>
-                    <div className="text-sm font-bold text-[#8B1D3B]">7 / 9</div>
-                    <div className="text-[10px] text-emerald-600 mt-1">Venue & Catering ✓</div>
+                  <div className="bg-[#2D0B16] p-2.5 rounded-xl border border-[#D4AF37]/20">
+                    <div className="text-[9px] uppercase font-semibold tracking-wider text-[#FCF8F2]/60">Vendors</div>
+                    <div className="text-xs font-bold text-[#E5C358] mt-0.5">7 / 9 Booked</div>
+                    <div className="text-[9px] text-amber-300 mt-0.5">Venue & Catering ✓</div>
                   </div>
-                  <div className="bg-[#FDF6EC] p-3 rounded-lg border border-[#E8D5B7]">
-                    <div className="text-[10px] text-slate-500 font-medium">TASKS COMPLETED</div>
-                    <div className="text-sm font-bold text-[#8B1D3B]">14 / 20</div>
-                    <div className="text-[10px] text-amber-700 mt-1">70% Finished</div>
+                  <div className="bg-[#2D0B16] p-2.5 rounded-xl border border-[#D4AF37]/20">
+                    <div className="text-[9px] uppercase font-semibold tracking-wider text-[#FCF8F2]/60">Checklist</div>
+                    <div className="text-xs font-bold text-[#E5C358] mt-0.5">14 / 20 Done</div>
+                    <div className="text-[9px] text-emerald-400 mt-0.5">70% Completed</div>
                   </div>
                 </div>
               </div>
@@ -189,237 +229,264 @@ export default function LandingPage({ onNavigateToAuth, onNavigateToLegal }: Lan
         </div>
       </section>
 
-      {/* VALUE HIGHLIGHTS */}
-      <section className="py-12 bg-white border-b border-amber-200/60 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div className="p-4">
-            <div className="text-2xl mb-1">🏰</div>
-            <div className="text-sm font-bold text-[#8B1D3B]">Everything in One Place</div>
-            <div className="text-xs text-slate-500 mt-1">No more scattered notes or lost chat messages.</div>
+      {/* VALUE STRIP */}
+      <section className="py-14 bg-white border-y border-[#EAE0D5] px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="p-4 space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-[#FCF8F2] border border-[#D4AF37]/40 flex items-center justify-center text-2xl mx-auto shadow-sm">
+              🏰
+            </div>
+            <div className="font-playfair text-base font-bold text-[#7A1631]">Single Source of Truth</div>
+            <p className="text-xs text-[#75676B] leading-relaxed">No more scattered chat threads, physical registers, or lost spreadsheets.</p>
           </div>
-          <div className="p-4">
-            <div className="text-2xl mb-1">⚡</div>
-            <div className="text-sm font-bold text-[#8B1D3B]">Real-Time Progress</div>
-            <div className="text-xs text-slate-500 mt-1">Instant updates across all devices.</div>
+
+          <div className="p-4 space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-[#FCF8F2] border border-[#D4AF37]/40 flex items-center justify-center text-2xl mx-auto shadow-sm">
+              ⚡
+            </div>
+            <div className="font-playfair text-base font-bold text-[#7A1631]">Real-Time Sync</div>
+            <p className="text-xs text-[#75676B] leading-relaxed">Instant updates across mobile browsers, tablets, and desktop computers.</p>
           </div>
-          <div className="p-4">
-            <div className="text-2xl mb-1">👨‍👩‍👧‍👦</div>
-            <div className="text-sm font-bold text-[#8B1D3B]">Family Friendly</div>
-            <div className="text-xs text-slate-500 mt-1">Share timelines & seating plans effortlessly.</div>
+
+          <div className="p-4 space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-[#FCF8F2] border border-[#D4AF37]/40 flex items-center justify-center text-2xl mx-auto shadow-sm">
+              👨‍👩‍👧‍👦
+            </div>
+            <div className="font-playfair text-base font-bold text-[#7A1631]">Family Collaboration</div>
+            <p className="text-xs text-[#75676B] leading-relaxed">Share viewable wedding itineraries, seating plans, and functions effortlessly.</p>
           </div>
-          <div className="p-4">
-            <div className="text-2xl mb-1">🔒</div>
-            <div className="text-sm font-bold text-[#8B1D3B]">Secure Cloud Storage</div>
-            <div className="text-xs text-slate-500 mt-1">PostgreSQL encryption and session security.</div>
+
+          <div className="p-4 space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-[#FCF8F2] border border-[#D4AF37]/40 flex items-center justify-center text-2xl mx-auto shadow-sm">
+              🔒
+            </div>
+            <div className="font-playfair text-base font-bold text-[#7A1631]">Encrypted Privacy</div>
+            <p className="text-xs text-[#75676B] leading-relaxed">PostgreSQL data isolation with secure session management.</p>
           </div>
         </div>
       </section>
 
-      {/* SERVICES GRID */}
-      <section id="services" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center space-y-2 mb-12">
-          <h2 className="font-playfair text-2xl sm:text-4xl font-bold text-[#8B1D3B]">
-            All 10 Core Wedding Planning Modules
+      {/* CORE 10 MODULES GRID */}
+      <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center space-y-3 mb-16">
+          <div className="inline-block text-xs font-bold tracking-widest text-[#7A1631] uppercase bg-[#F3E5AB]/40 px-3.5 py-1 rounded-full border border-[#D4AF37]/30">
+            Comprehensive Wedding Suite
+          </div>
+          <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-[#1A1617]">
+            All 10 Essential Wedding Modules
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-            Everything you need for Haldi, Mehendi, Sangeet, Baraat, Vivah, and Reception.
+          <p className="text-sm text-[#75676B] max-w-2xl mx-auto">
+            From initial engagement and budget planning to Haldi, Mehendi, Sangeet, Vivah, and post-wedding Shagun records.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {SERVICES.map((s, idx) => (
             <div
               key={idx}
-              className="bg-white p-6 rounded-2xl border border-[#E8D5B7] shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 space-y-3"
+              className="luxury-card p-6 flex flex-col justify-between group cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#FDF6EC] flex items-center justify-center text-xl border border-amber-300/40">
-                {s.icon}
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#FCF8F2] border border-[#D4AF37]/30 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                  {s.icon}
+                </div>
+                <h3 className="font-playfair text-lg font-bold text-[#7A1631] group-hover:text-[#5C0F24] transition-colors">
+                  {s.title}
+                </h3>
+                <p className="text-xs text-[#75676B] leading-relaxed">
+                  {s.desc}
+                </p>
               </div>
-              <h3 className="font-playfair text-base font-bold text-[#8B1D3B]">{s.title}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{s.desc}</p>
+              <div className="pt-4 mt-4 border-t border-[#EAE0D5] flex items-center justify-between text-xs font-semibold text-[#7A1631]">
+                <span>Explore Feature</span>
+                <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section id="how-it-works" className="py-16 bg-[#3A0C1A] text-white px-4">
-        <div className="max-w-5xl mx-auto text-center space-y-12">
-          <div>
-            <h2 className="font-playfair text-2xl sm:text-4xl font-bold text-white">How Shaadi Planner Works</h2>
-            <p className="text-xs sm:text-sm text-amber-200/70 mt-2">From initial engagement to the big reception in 4 simple steps.</p>
+      {/* HOW IT WORKS WORKFLOW */}
+      <section id="how-it-works" className="py-20 bg-[#1D060D] text-white px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="max-w-6xl mx-auto text-center space-y-14 relative z-10">
+          <div className="space-y-3">
+            <div className="inline-block text-xs font-bold tracking-widest text-[#E5C358] uppercase bg-[#5C0F24]/80 px-3.5 py-1 rounded-full border border-[#D4AF37]/30">
+              Seamless 4-Step Process
+            </div>
+            <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-white">
+              How Shaadi Planner Works
+            </h2>
+            <p className="text-sm text-[#FCF8F2]/70 max-w-xl mx-auto">
+              Designed specifically around Indian wedding traditions, multi-day ceremonies, and family structures.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-            <div className="bg-white/5 p-5 rounded-xl border border-amber-400/20 backdrop-blur-sm space-y-2">
-              <div className="w-8 h-8 rounded-full bg-[#D4900A] text-slate-950 font-bold flex items-center justify-center text-sm">1</div>
-              <h3 className="font-semibold text-sm text-white">Create Your Wedding</h3>
-              <p className="text-xs text-amber-100/70">Set couple names, wedding date, city, estimated budget, and guest count.</p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-left">
+            <div className="bg-[#2D0B16] p-6 rounded-2xl border border-[#D4AF37]/20 relative">
+              <div className="text-2xl font-bold text-[#D4AF37] font-cinzel mb-3">01</div>
+              <h3 className="font-playfair text-base font-bold text-white mb-2">Create Your Wedding</h3>
+              <p className="text-xs text-[#FCF8F2]/70 leading-relaxed">Enter wedding dates, estimated guest count, overall budget, and city tier.</p>
             </div>
-            <div className="bg-white/5 p-5 rounded-xl border border-amber-400/20 backdrop-blur-sm space-y-2">
-              <div className="w-8 h-8 rounded-full bg-[#D4900A] text-slate-950 font-bold flex items-center justify-center text-sm">2</div>
-              <h3 className="font-semibold text-sm text-white">Add Events & Guests</h3>
-              <p className="text-xs text-amber-100/70">Input your Haldi, Mehendi, and Sangeet functions along with your guest lists.</p>
+
+            <div className="bg-[#2D0B16] p-6 rounded-2xl border border-[#D4AF37]/20 relative">
+              <div className="text-2xl font-bold text-[#D4AF37] font-cinzel mb-3">02</div>
+              <h3 className="font-playfair text-base font-bold text-white mb-2">Manage Guests & Seating</h3>
+              <p className="text-xs text-[#FCF8F2]/70 leading-relaxed">Categorize RSVPs by Bride/Groom side, meal preference, and table assignments.</p>
             </div>
-            <div className="bg-white/5 p-5 rounded-xl border border-amber-400/20 backdrop-blur-sm space-y-2">
-              <div className="w-8 h-8 rounded-full bg-[#D4900A] text-slate-950 font-bold flex items-center justify-center text-sm">3</div>
-              <h3 className="font-semibold text-sm text-white">Book Vendors & Menu</h3>
-              <p className="text-xs text-amber-100/70">Track caterers, venue payments, photographers, and multi-course food menus.</p>
+
+            <div className="bg-[#2D0B16] p-6 rounded-2xl border border-[#D4AF37]/20 relative">
+              <div className="text-2xl font-bold text-[#D4AF37] font-cinzel mb-3">03</div>
+              <h3 className="font-playfair text-base font-bold text-white mb-2">Track Vendors & Budget</h3>
+              <p className="text-xs text-[#FCF8F2]/70 leading-relaxed">Keep track of quotes, advance deposits, remaining dues, and catering menus.</p>
             </div>
-            <div className="bg-white/5 p-5 rounded-xl border border-amber-400/20 backdrop-blur-sm space-y-2">
-              <div className="w-8 h-8 rounded-full bg-[#D4900A] text-slate-950 font-bold flex items-center justify-center text-sm">4</div>
-              <h3 className="font-semibold text-sm text-white">Track & Celebrate</h3>
-              <p className="text-xs text-amber-100/70">Monitor completion percentages, seating allocations, and shagun gifts live.</p>
+
+            <div className="bg-[#2D0B16] p-6 rounded-2xl border border-[#D4AF37]/20 relative">
+              <div className="text-2xl font-bold text-[#D4AF37] font-cinzel mb-3">04</div>
+              <h3 className="font-playfair text-base font-bold text-white mb-2">Execute & Record Shagun</h3>
+              <p className="text-xs text-[#FCF8F2]/70 leading-relaxed">Share function itineraries with family and log cash gifts during events securely.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FEATURE COMPARISON */}
-      <section id="comparison" className="py-16 px-4 max-w-5xl mx-auto">
-        <div className="text-center space-y-2 mb-10">
-          <h2 className="font-playfair text-2xl sm:text-3xl font-bold text-[#8B1D3B]">
-            Why Upgrade From Spreadsheets & WhatsApp?
+      {/* WHY SHAADI PLANNER COMPARISON */}
+      <section id="comparison" className="py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div className="text-center space-y-3 mb-14">
+          <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-[#1A1617]">
+            Why Modern Couples Choose Shaadi Planner
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600">Built specifically for the unique workflow of Indian weddings.</p>
+          <p className="text-sm text-[#75676B]">
+            Say goodbye to disorganized WhatsApp groups and confusing notebook entries.
+          </p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-[#E8D5B7] shadow-sm overflow-hidden text-xs sm:text-sm">
-          <div className="grid grid-cols-3 bg-[#3A0C1A] text-white p-3 font-semibold text-center">
-            <div>Feature</div>
-            <div>Excel / WhatsApp</div>
-            <div className="text-[#D4900A]">Shaadi Planner</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Traditional Method */}
+          <div className="bg-rose-50/50 p-8 rounded-2xl border border-rose-200 space-y-4">
+            <div className="text-xs font-bold uppercase tracking-wider text-rose-800 flex items-center gap-2">
+              <span>⚠️</span> Traditional Planning Methods
+            </div>
+            <ul className="space-y-3 text-xs text-rose-950/80 leading-relaxed">
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✕</span>
+                <span>Scattered budget notes in multiple notebooks and phone messaging apps.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✕</span>
+                <span>Duplicate guest entries and unconfirmed dietary preferences.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✕</span>
+                <span>Missed vendor payment deadlines and unrecorded cash deposits.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✕</span>
+                <span>Confusing seating arrangements leading to last-minute venue chaos.</span>
+              </li>
+            </ul>
           </div>
-          <div className="divide-y divide-amber-100">
-            <div className="grid grid-cols-3 p-3 text-center items-center">
-              <div className="font-medium text-slate-800 text-left">Indian Wedding Functions</div>
-              <div className="text-rose-600">Manual tables</div>
-              <div className="text-emerald-700 font-bold">Built-in (Haldi to Vivah) ✓</div>
-            </div>
-            <div className="grid grid-cols-3 p-3 text-center items-center bg-[#FFFBF5]">
-              <div className="font-medium text-slate-800 text-left">RSVP & Meal Preferences</div>
-              <div className="text-rose-600">Scattered WhatsApp chats</div>
-              <div className="text-emerald-700 font-bold">Veg / Non-Veg / Jain tracking ✓</div>
-            </div>
-            <div className="grid grid-cols-3 p-3 text-center items-center">
-              <div className="font-medium text-slate-800 text-left">Seating Capacity Validation</div>
-              <div className="text-rose-600">No warnings</div>
-              <div className="text-emerald-700 font-bold">Server-enforced table limits ✓</div>
-            </div>
-            <div className="grid grid-cols-3 p-3 text-center items-center bg-[#FFFBF5]">
-              <div className="font-medium text-slate-800 text-left">Shagun & Gift Record</div>
-              <div className="text-rose-600">Lost notebooks</div>
-              <div className="text-emerald-700 font-bold">Private financial logs ✓</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* DEMO TESTIMONIAL PLACEHOLDERS */}
-      <section className="py-16 bg-[#FDF6EC] border-t border-b border-amber-200/60 px-4">
-        <div className="max-w-5xl mx-auto text-center space-y-8">
-          <h2 className="font-playfair text-2xl sm:text-3xl font-bold text-[#8B1D3B]">Loved by Couples & Families</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-            <div className="bg-white p-5 rounded-xl border border-amber-300/40 shadow-sm space-y-2">
-              <div className="text-amber-500 text-sm">★★★★★</div>
-              <p className="text-xs text-slate-600 italic">"Managing 400 guests and 6 functions was effortless. The seating planner and meal preference filters saved us so much time!"</p>
-              <div className="text-xs font-bold text-[#8B1D3B] pt-2">— Vikram & Priya, New Delhi <span className="text-[10px] text-slate-400 font-normal">(Demo Feedback)</span></div>
+          {/* Shaadi Planner Method */}
+          <div className="bg-[#FCF8F2] p-8 rounded-2xl border-2 border-[#D4AF37]/50 shadow-md space-y-4">
+            <div className="text-xs font-bold uppercase tracking-wider text-[#7A1631] flex items-center gap-2">
+              <span>👑</span> Shaadi Planner Platform
             </div>
-            <div className="bg-white p-5 rounded-xl border border-amber-300/40 shadow-sm space-y-2">
-              <div className="text-amber-500 text-sm">★★★★★</div>
-              <p className="text-xs text-slate-600 italic">"The vendor budget breakdown helped us stay under our ₹30 Lakh cap. We could track every token payment."</p>
-              <div className="text-xs font-bold text-[#8B1D3B] pt-2">— Rohan & Meera, Mumbai <span className="text-[10px] text-slate-400 font-normal">(Demo Feedback)</span></div>
-            </div>
-            <div className="bg-white p-5 rounded-xl border border-amber-300/40 shadow-sm space-y-2">
-              <div className="text-amber-500 text-sm">★★★★★</div>
-              <p className="text-xs text-slate-600 italic">"Our family loved being able to check the function timelines and menu choices without having to ask us repeatedly!"</p>
-              <div className="text-xs font-bold text-[#8B1D3B] pt-2">— Sneha & Arjun, Bengaluru <span className="text-[10px] text-slate-400 font-normal">(Demo Feedback)</span></div>
-            </div>
+            <ul className="space-y-3 text-xs text-[#1A1617] leading-relaxed font-medium">
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span>Unified cloud platform accessible anywhere with instant data sync.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span>Structured guest RSVP management with Bride/Groom side filters.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span>Automated budget tracking, vendor balances, and payment reminders.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span>Dedicated Shagun gift tracker, menu builder, and ceremonial timelines.</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
 
       {/* FAQ SECTION */}
-      <section id="faq" className="py-16 px-4 max-w-4xl mx-auto">
-        <div className="text-center space-y-2 mb-10">
-          <h2 className="font-playfair text-2xl sm:text-3xl font-bold text-[#8B1D3B]">Frequently Asked Questions</h2>
-          <p className="text-xs text-slate-600">Everything you need to know about Shaadi Planner.</p>
-        </div>
+      <section id="faq" className="py-20 bg-white border-t border-[#EAE0D5] px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <div className="text-center space-y-3">
+            <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-[#1A1617]">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm text-[#75676B]">
+              Everything you need to know about getting started with Shaadi Planner.
+            </p>
+          </div>
 
-        <div className="space-y-3">
-          {FAQS.map((faq, idx) => (
-            <div key={idx} className="bg-white rounded-xl border border-[#E8D5B7] overflow-hidden">
-              <button
-                onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                className="w-full text-left p-4 font-semibold text-xs sm:text-sm text-[#8B1D3B] flex items-center justify-between"
+          <div className="space-y-4">
+            {FAQS.map((faq, idx) => (
+              <div
+                key={idx}
+                className="luxury-card overflow-hidden"
               >
-                <span>{faq.q}</span>
-                <span className="text-amber-700">{activeFaq === idx ? "−" : "+"}</span>
-              </button>
-              {activeFaq === idx && (
-                <div className="px-4 pb-4 text-xs text-slate-600 border-t border-amber-100 pt-3 leading-relaxed">
-                  {faq.a}
-                </div>
-              )}
-            </div>
-          ))}
+                <button
+                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#7A1631] hover:text-[#5C0F24] cursor-pointer"
+                >
+                  <span>{faq.q}</span>
+                  <span className="text-lg font-bold text-[#D4AF37]">{activeFaq === idx ? "−" : "+"}</span>
+                </button>
+                {activeFaq === idx && (
+                  <div className="px-5 pb-5 text-xs text-[#75676B] leading-relaxed border-t border-[#EAE0D5] pt-3">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section className="py-16 bg-[#3A0C1A] text-white text-center px-4 space-y-6">
-        <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-white">
-          Your Shaadi. Your Plan. <span className="text-[#D4900A]">One Place.</span>
-        </h2>
-        <p className="text-xs sm:text-sm text-amber-100/70 max-w-lg mx-auto">
-          Start organizing your wedding today. Free registration with secure cloud persistence.
-        </p>
-        <div>
-          <button
-            onClick={() => onNavigateToAuth("register")}
-            className="bg-[#D4900A] hover:bg-amber-600 text-slate-950 font-bold px-8 py-3.5 rounded-xl text-sm shadow-xl transition-all active:scale-95"
-          >
-            Create Your Free Account Now
-          </button>
+      {/* FINAL CTA BANNER */}
+      <section className="py-20 bg-gradient-to-br from-[#1D060D] via-[#3D0A19] to-[#1D060D] text-white px-4 text-center relative overflow-hidden">
+        <div className="max-w-4xl mx-auto space-y-6 relative z-10">
+          <h2 className="font-playfair text-3xl sm:text-5xl font-bold leading-tight">
+            Ready to Plan Your Dream Wedding?
+          </h2>
+          <p className="text-sm sm:text-base text-[#FCF8F2]/80 max-w-xl mx-auto">
+            Join couples organizing their perfect Indian wedding celebration with Shaadi Planner.
+          </p>
+          <div className="pt-4">
+            <button
+              onClick={() => onNavigateToAuth("register")}
+              className="luxury-button-gold px-10 py-4 rounded-xl text-sm font-bold uppercase tracking-wider cursor-pointer"
+            >
+              Create Free Account Now 🎉
+            </button>
+          </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#2C0914] text-amber-200/70 py-10 border-t border-amber-900/40 text-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-          <div>
-            <h4 className="font-playfair text-white text-sm font-bold mb-3">Shaadi Planner</h4>
-            <p className="text-[11px] text-amber-100/60 leading-relaxed">
-              The premier cloud wedding planning platform for Indian couples and families.
-            </p>
+      <footer className="bg-[#1D060D] text-[#FCF8F2]/70 py-12 border-t border-[#D4AF37]/20 text-xs px-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="space-y-1">
+            <div className="font-cinzel text-lg font-bold text-white tracking-wider">
+              SHAADI <span className="gold-gradient-text">PLANNER</span>
+            </div>
+            <p className="text-[11px] text-[#FCF8F2]/50">Royal Indian Wedding SaaS Platform</p>
           </div>
-          <div>
-            <h4 className="font-semibold text-white mb-3">Services</h4>
-            <ul className="space-y-1.5 text-[11px]">
-              <li>Dashboard & Analytics</li>
-              <li>Budget & Expenses</li>
-              <li>Guest RSVPs</li>
-              <li>Seating & Vendors</li>
-            </ul>
+
+          <div className="flex items-center gap-6 text-xs text-[#FCF8F2]/80 font-medium">
+            <button onClick={() => onNavigateToLegal("privacy")} className="hover:text-[#E5C358] transition-colors cursor-pointer">Privacy Policy</button>
+            <button onClick={() => onNavigateToLegal("terms")} className="hover:text-[#E5C358] transition-colors cursor-pointer">Terms of Service</button>
           </div>
-          <div>
-            <h4 className="font-semibold text-white mb-3">Legal & Security</h4>
-            <ul className="space-y-1.5 text-[11px]">
-              <li><button onClick={() => onNavigateToLegal("privacy")} className="hover:text-white">Privacy Policy</button></li>
-              <li><button onClick={() => onNavigateToLegal("terms")} className="hover:text-white">Terms of Service</button></li>
-              <li>Cookie Security</li>
-              <li>Data Protection</li>
-            </ul>
+
+          <div className="text-[11px] text-[#FCF8F2]/50">
+            © {new Date().getFullYear()} Shaadi Planner. All rights reserved.
           </div>
-          <div>
-            <h4 className="font-semibold text-white mb-3">Support</h4>
-            <p className="text-[11px] text-amber-100/60">support@shaadiplanner.com</p>
-            <p className="text-[11px] text-amber-100/60 mt-1">Render Cloud Deployment Ready</p>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 text-center border-t border-amber-900/40 pt-4 text-[10px] text-amber-200/40">
-          © {new Date().getFullYear()} Shaadi Planner. All rights reserved. Designed for Indian Weddings.
         </div>
       </footer>
     </div>
